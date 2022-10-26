@@ -2,7 +2,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.json',
-    tsconfigRootDir : __dirname, 
+    tsconfigRootDir : __dirname,
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint/eslint-plugin'],
@@ -12,7 +12,6 @@ module.exports = {
   root: true,
   env: {
     node: true,
-    jest: true,
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
@@ -34,6 +33,7 @@ module.exports = {
     'arrow-parens': 'off',
     'comma-dangle': ['error', 'always-multiline'],
     'semi': ['error', 'never'],
-    'quotes': ['error', 'single']
+    'quotes': ['error', 'single'],
+    'object-curly-spacing': ['error', 'never'],
   },
 }
