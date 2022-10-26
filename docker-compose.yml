@@ -7,13 +7,15 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     container_name: postgres-db
+    ports:
+      - "5432:5432"
     volumes:
       - data-postgres:/var/lib/postgresql/data
   nestjs:
     build:
       context: .
       dockerfile: ./Dockerfile
-      target: ${MODE}
+      target: ${NODE_ENV}
     image: oruj91/nestjs-graphql
     environment:
       - APP_PORT=${APP_PORT}
@@ -23,8 +25,8 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_SYNC=${DB_SYNC}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_TOKEN_EXPIRES=${JWT_TOKEN_EXPIRES}
+      - JWT_SECRET=${AUTH_JWT_SECRET}
+      - JWT_TOKEN_EXPIRES=${AUTH_JWT_TOKEN_EXPIRES}
     ports:
       - "3000:3000"
     container_name: nestjs-app
@@ -34,20 +36,20 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     command: pnpm start:dev
-#  pgadmin:
-#    image: dpage/pgadmin4
-#    restart: always
-#    container_name: pgadmin4
-#    environment:
-#      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-#      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-#      - PGADMIN_LISTEN_PORT=${PGADMIN_LISTEN_PORT}
-#    ports:
-#      - "8080:80"
-#    volumes:
-#      - data-pgadmin:/var/lib/pgadmin
-#    depends_on:
-#      - db
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    container_name: pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      - PGADMIN_LISTEN_PORT=${PGADMIN_LISTEN_PORT}
+    ports:
+      - "8080:80"
+    volumes:
+      - data-pgadmin:/var/lib/pgadmin
+    depends_on:
+      - db
 volumes:
   data-postgres:
-#  data-pgadmin:
+  data-pgadmin:
