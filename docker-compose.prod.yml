@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  nestjs:
+    container_name: nestjs-app
+    image: oruj91/nestjs-graphql
+    build:
+      context: .
+      target: production
+      dockerfile: ./Dockerfile
+    environment:
+      - APP_PORT=${APP_PORT}
+      - DB_PORT=${DB_PORT}
+      - DB_HOST=postgres
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - TYPEORM_SYNC=${TYPEORM_SYNC}
+      - JWT_SECRET=${AUTH_JWT_SECRET}
+      - JWT_TOKEN_EXPIRES=${AUTH_JWT_TOKEN_EXPIRES}
+    command: pnpm start:prod
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
