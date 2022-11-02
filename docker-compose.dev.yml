@@ -17,22 +17,6 @@ services:
     volumes:
       - vol_postgres:/var/lib/postgresql/data
     restart: always
-  pgadmin:
-    container_name: pgadmin4
-    image: dpage/pgadmin4
-    depends_on:
-      - postgres
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-      - PGADMIN_LISTEN_PORT=${PGADMIN_LISTEN_PORT}
-    ports:
-      - 8080:${PGADMIN_LISTEN_PORT}
-    networks:
-      - default
-    volumes:
-      - vol_pgadmin:/var/lib/pgadmin
-    restart: always
 networks:
   outside:
     driver: bridge
@@ -42,4 +26,3 @@ networks:
         - subnet: 192.168.220.0/24
 volumes:
   vol_postgres:
-  vol_pgadmin:

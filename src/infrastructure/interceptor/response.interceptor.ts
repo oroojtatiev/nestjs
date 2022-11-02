@@ -6,7 +6,7 @@ import {isEmptyObject} from '../../functions/helper'
 export interface IResponse<T> {
   status: HttpStatus
   data?: T | undefined
-  message?: string | undefined
+  message?: string | undefined | string[]
 }
 
 @Injectable()
