@@ -1,4 +1,4 @@
-import * as Joi from 'joi'
+import * as Joi from '@hapi/joi'
 
 export const schema = Joi.object({
   NODE_ENV: Joi.string().required().valid('development', 'production'),

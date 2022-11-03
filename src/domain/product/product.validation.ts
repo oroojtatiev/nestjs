@@ -1,6 +1,7 @@
-import * as Joi from 'joi'
+import * as Joi from '@hapi/joi'
+import 'joi-extract-type'
 
-export const productDtoSchema = Joi.object({
+export const productPostSchema = Joi.object({
   serial: Joi.string().alphanum().min(5).max(15).required(),
   title: Joi.string().min(5).max(55).required(),
   scale: Joi.string().min(3).max(6),
@@ -10,3 +11,8 @@ export const productDtoSchema = Joi.object({
   inStock: Joi.boolean(),
   isPublished: Joi.boolean(),
 })
+
+export const productPutSchema = productPostSchema
+
+export type ProductPostDto = typeof Joi.extractType<typeof productPostSchema>
+export type ProductPutDto = typeof Joi.extractType<typeof productPutSchema>

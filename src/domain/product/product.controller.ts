@@ -2,8 +2,7 @@ import {Controller, Post, Body, Get, Query, Param, Delete, Put, UsePipes} from '
 import {ProductRepository} from './product.repository'
 import {ProductService} from './product.service'
 import {JoiValidationPipe} from '../../infrastructure/pipes/validation.pipe'
-import {productDtoSchema} from './product.validation'
-import {Product} from './product.entity'
+import {ProductPostDto, productPostSchema, ProductPutDto, productPutSchema} from './product.validation'
 
 @Controller('products')
 export class ProductController {
@@ -13,8 +12,8 @@ export class ProductController {
   ) {}
 
   @Post()
-  @UsePipes(new JoiValidationPipe(productDtoSchema))
-  async create(@Body() data: unknown) {
+  @UsePipes(new JoiValidationPipe(productPostSchema))
+  async create(@Body() data: ProductPostDto) {
     // TODO implement typeId checking
 
     const product = await this.productRepository.save(data)
@@ -35,11 +34,10 @@ export class ProductController {
   }
 
   @Put(':id')
-  @UsePipes(new JoiValidationPipe(productDtoSchema))
-  async update(@Param('id') id: number, @Body() data: Product) {
+  @UsePipes(new JoiValidationPipe(productPutSchema))
+  async update(@Param('id') id: number, @Body() data: ProductPutDto) {
     await this.productRepository.update(id, data)
-
-    return {id, ...data}
+    return await this.findOne(id)
   }
 
   @Delete(':id')
