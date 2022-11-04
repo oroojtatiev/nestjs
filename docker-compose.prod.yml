@@ -10,13 +10,21 @@ services:
       dockerfile: ./Dockerfile
     environment:
       - APP_PORT=${APP_PORT}
-      - DB_PORT=${DB_PORT}
       - DB_HOST=postgres
+      - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
       - TYPEORM_SYNC=${TYPEORM_SYNC}
-      - JWT_SECRET=${AUTH_JWT_SECRET}
-      - JWT_TOKEN_EXPIRES=${AUTH_JWT_TOKEN_EXPIRES}
+      - TYPEORM_MIGRATIONS_DIR=${TYPEORM_MIGRATIONS_DIR}
+      - TYPEORM_MIGRATIONS=${TYPEORM_MIGRATIONS}
+      - AUTH_JWT_SECRET=${AUTH_JWT_SECRET}
+      - AUTH_JWT_TOKEN_EXPIRE=${AUTH_JWT_TOKEN_EXPIRE}
+      - AUTH_CONFIRM_URL=${AUTH_CONFIRM_URL}
+      - AWS_MAIL_ENDPOINT=${AWS_MAIL_ENDPOINT}
+      - AWS_MAIL_USER=${AWS_MAIL_USER}
+      - AWS_MAIL_PASSWORD=${AWS_MAIL_PASSWORD}
+      - AWS_MAIL_FROM=${AWS_MAIL_FROM}
     command: pnpm start:prod
     ports:
       - ${APP_PORT}:${APP_PORT}
