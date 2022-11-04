@@ -5,4 +5,4 @@ export const confirmationSchema = Joi.object({
   email: Joi.string().email().required(),
 })
 
-export type confirmationDto = typeof Joi.extractType<typeof confirmationSchema>
+export type ConfirmationDto = typeof Joi.extractType<typeof confirmationSchema>

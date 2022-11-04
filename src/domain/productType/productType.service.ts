@@ -10,7 +10,7 @@ export class ProductTypeService {
     @InjectRepository(ProductTypeRepository) private readonly productTypeRepository: ProductTypeRepository,
   ) {}
 
-  async isNotExist(typeId: number): Promise<any> {
+  async isNotExist(typeId: number): Promise<boolean> {
     const r = await this.productTypeRepository.findOne({
       where: {
         id: typeId,
