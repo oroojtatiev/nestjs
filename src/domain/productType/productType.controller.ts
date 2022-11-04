@@ -6,7 +6,7 @@ import {
   ProductTypePostDto,
   productTypePostSchema,
   ProductTypePutDto,
-  productTypePutSchema
+  productTypePutSchema,
 } from './productType.validation'
 import {prepareData} from '../../functions/date'
 
