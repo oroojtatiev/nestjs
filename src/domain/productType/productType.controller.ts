@@ -1,7 +1,7 @@
 import {Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes} from '@nestjs/common'
 import {ProductTypeRepository} from './productType.repository'
 import {ProductTypeService} from './productType.service'
-import {JoiValidationPipe} from '../../infrastructure/pipes/validation.pipe'
+import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {
   ProductTypePostDto,
   productTypePostSchema,
@@ -30,7 +30,7 @@ export class ProductTypeController {
   }
 
   @Post()
-  @UsePipes(new JoiValidationPipe(productTypePostSchema))
+  @UsePipes(new BodyValidatePipe(productTypePostSchema))
   async create(@Body() data: ProductTypePostDto) {
     const product = await this.productTypeRepository.save(data)
 
@@ -38,7 +38,7 @@ export class ProductTypeController {
   }
 
   @Put(':id')
-  @UsePipes(new JoiValidationPipe(productTypePutSchema))
+  @UsePipes(new BodyValidatePipe(productTypePutSchema))
   async update(@Param('id') id: number, @Body() data: ProductTypePutDto) {
     await this.productTypeRepository.update(id, data)
     return await this.getOne(id)

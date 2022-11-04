@@ -20,7 +20,7 @@ export class AuthService {
 
     return this.jwtService.sign(payload, {
       secret: this.configService.get('AUTH_JWT_SECRET'),
-      expiresIn: `${this.configService.get('AUTH_JWT_TOKEN_EXPIRE')}s`,
+      expiresIn: `${this.configService.get('AUTH_JWT_TOKEN_EXPIRE_SECONDS')}s`,
     })
   }
 

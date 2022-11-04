@@ -12,7 +12,7 @@ export const schema = Joi.object({
   TYPEORM_ENTITIES: Joi.string().required(),
   TYPEORM_SYNC: Joi.string().required().valid('true', 'false'),
   AUTH_JWT_SECRET: Joi.string().required(),
-  AUTH_JWT_TOKEN_EXPIRE: Joi.string().required(),
+  AUTH_JWT_TOKEN_EXPIRE_SECONDS: Joi.string().required(),
   AUTH_CONFIRM_URL: Joi.string().required(),
   AWS_MAIL_ENDPOINT: Joi.string().required(),
   AWS_MAIL_USER: Joi.string().required(),

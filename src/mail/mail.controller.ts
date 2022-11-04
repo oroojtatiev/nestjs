@@ -1,7 +1,7 @@
 import {Body, Controller, Post, UsePipes} from '@nestjs/common'
 import {AuthService} from '../auth/auth.service'
 import {MailService} from './mail.service'
-import {JoiValidationPipe} from '../infrastructure/pipes/validation.pipe'
+import {BodyValidatePipe} from '../infrastructure/pipes/validation.pipe'
 import {ConfirmationDto, confirmationSchema} from './mail.validation'
 
 @Controller('mail')
@@ -12,7 +12,7 @@ export class MailController {
   ) {}
 
   @Post('confirm')
-  @UsePipes(new JoiValidationPipe(confirmationSchema))
+  @UsePipes(new BodyValidatePipe(confirmationSchema))
   async resendConfirmation(@Body() body: ConfirmationDto) {
     const token = await this.authService.generateToken(body.email)
 

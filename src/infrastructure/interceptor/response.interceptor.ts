@@ -4,8 +4,8 @@ import {isEmptyObject} from '../../functions/helper'
 
 export interface IResponse<T> {
   status: HttpStatus
-  data?: T | undefined
-  message?: string | undefined | string[]
+  data?: T
+  message?: string | string[]
 }
 
 @Injectable()
@@ -25,6 +25,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, IResponse<T>> 
       delete project.message
 
       if (Array.isArray(project)) data = await project
+      else if (typeof project === 'string') data = project
       else if (isEmptyObject(project)) data = undefined
       else data = await project.data
 

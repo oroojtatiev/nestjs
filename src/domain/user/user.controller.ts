@@ -7,7 +7,7 @@ import {AuthService} from '../../auth/auth.service'
 import {MailService} from '../../mail/mail.service'
 import {prepareData} from '../../functions/date'
 import {CreateUserDto, UpdateUserDto, createUserSchema, updateUserSchema} from './user.validation'
-import {JoiValidationPipe} from '../../infrastructure/pipes/validation.pipe'
+import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 
 @Controller('users')
 export class UserController {
@@ -31,7 +31,7 @@ export class UserController {
   }
 
   @Post('register')
-  @UsePipes(new JoiValidationPipe(createUserSchema))
+  @UsePipes(new BodyValidatePipe(createUserSchema))
   async create(@Body() body: CreateUserDto) {
     const isEmailExist = await this.userService.checkEmail(body.email)
 
@@ -58,7 +58,7 @@ export class UserController {
   }
 
   @Put(':id')
-  @UsePipes(new JoiValidationPipe(updateUserSchema))
+  @UsePipes(new BodyValidatePipe(updateUserSchema))
   async update(@Param('id') id: number, @Body() data: UpdateUserDto) {
     await this.userRepository.update(id, data)
     return await this.getOne(id)

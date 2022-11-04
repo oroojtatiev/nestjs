@@ -3,7 +3,7 @@ import {
 } from '@nestjs/common'
 import {ProductRepository} from './product.repository'
 import {ProductService} from './product.service'
-import {JoiValidationPipe} from '../../infrastructure/pipes/validation.pipe'
+import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {ProductPostDto, productPostSchema, ProductPutDto, productPutSchema} from './product.validation'
 import {ProductTypeService} from '../productType/productType.service'
 import {prepareData} from '../../functions/date'
@@ -29,7 +29,7 @@ export class ProductController {
   }
 
   @Post()
-  @UsePipes(new JoiValidationPipe(productPostSchema))
+  @UsePipes(new BodyValidatePipe(productPostSchema))
   async create(@Body() data: ProductPostDto) {
     const isTypeIdNotExist = await this.productTypeService.isNotExist(data.productTypeId)
 
@@ -41,7 +41,7 @@ export class ProductController {
   }
 
   @Put(':id')
-  @UsePipes(new JoiValidationPipe(productPutSchema))
+  @UsePipes(new BodyValidatePipe(productPutSchema))
   async update(@Param('id') id: number, @Body() data: ProductPutDto) {
     await this.productRepository.update(id, data)
     return await this.getOne(id)
