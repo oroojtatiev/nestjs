@@ -2,9 +2,9 @@ import {Injectable} from '@nestjs/common'
 import {InjectRepository} from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
 import {UserRepository} from './user.repository'
-import {createUserDto} from './user.validation'
 import {getFormattedDateTime, prepareData} from '../../functions/date'
 import {User} from './user.entity'
+import {CreateUserDto} from './user.validation'
 
 const saltRounds = 10
 
@@ -28,7 +28,7 @@ export class UserService {
     return isEmailFound !== null
   }
 
-  async postUser(dto: createUserDto) {
+  async postUser(dto: CreateUserDto) {
     const passwordHash = await bcrypt.hash(dto.password, saltRounds)
 
     return await this.userRepository.save({

@@ -23,4 +23,11 @@ export class UserRepository extends Repository<User> {
       where: {id},
     })
   }
+
+  async deleteOrFail(id: number) {
+    await this.findOneOrFail({
+      where: {id},
+    })
+    return this.delete(id)
+  }
 }

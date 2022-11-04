@@ -1,10 +1,12 @@
-import {Body, Controller, Get, HttpException, HttpStatus, Param, Post, Query, UsePipes} from '@nestjs/common'
+import {
+  Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Query, UsePipes,
+} from '@nestjs/common'
 import {UserRepository} from './user.repository'
 import {UserService} from './user.service'
 import {AuthService} from '../../auth/auth.service'
 import {MailService} from '../../mail/mail.service'
 import {prepareData} from '../../functions/date'
-import {createUserDto, createUserSchema} from './user.validation'
+import {CreateUserDto, UpdateUserDto, createUserSchema, updateUserSchema} from './user.validation'
 import {JoiValidationPipe} from '../../infrastructure/pipes/validation.pipe'
 
 @Controller('users')
@@ -30,7 +32,7 @@ export class UserController {
 
   @Post('register')
   @UsePipes(new JoiValidationPipe(createUserSchema))
-  async create(@Body() body: createUserDto) {
+  async create(@Body() body: CreateUserDto) {
     const isEmailExist = await this.userService.checkEmail(body.email)
 
     if (isEmailExist) {
@@ -53,5 +55,21 @@ export class UserController {
     const email = await this.authService.decodeConfirmationToken(token)
 
     await this.userService.confirmEmail(email)
+  }
+
+  @Put(':id')
+  @UsePipes(new JoiValidationPipe(updateUserSchema))
+  async update(@Param('id') id: number, @Body() data: UpdateUserDto) {
+    await this.userRepository.update(id, data)
+    return await this.getOne(id)
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: number) {
+    await this.userRepository.deleteOrFail(id)
+
+    return {
+      message: `Product with ID "${id}" has been deleted`,
+    }
   }
 }
