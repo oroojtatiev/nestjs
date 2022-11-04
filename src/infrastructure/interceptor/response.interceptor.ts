@@ -1,7 +1,5 @@
 import {Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpStatus} from '@nestjs/common'
-import {Observable} from 'rxjs'
-import {map} from 'rxjs/operators'
-import {isEmptyObject} from '../../functions/helper'
+import {mergeMap, Observable} from 'rxjs'
 
 export interface IResponse<T> {
   status: HttpStatus
@@ -12,21 +10,20 @@ export interface IResponse<T> {
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, IResponse<T>> {
   intercept(context: ExecutionContext, next: CallHandler): Observable<IResponse<T>> {
-    const status = context.switchToHttp().getResponse().statusCode
-    let message: string | undefined = undefined
+    let status = context.switchToHttp().getResponse().statusCode
+    let data = undefined
+    let message = undefined
 
-    return next.handle().pipe(map(project => {
+    return next.handle().pipe(mergeMap(async project => {
       if (project === undefined) return {status}
 
+      if (project.status) status = project.status
+      if (project.data) data = await project.data
       if (project.message) message = project.message
 
-      delete project.message
-
-      if (isEmptyObject(project)) project = undefined
-
       return {
-        status,
-        data: project,
+        status: status,
+        data: data,
         message: message,
       }
     }))
