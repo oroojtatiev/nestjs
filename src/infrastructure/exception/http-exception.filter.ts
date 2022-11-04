@@ -1,6 +1,7 @@
 import {ExceptionFilter, Catch, ArgumentsHost, HttpException, NotFoundException, HttpStatus} from '@nestjs/common'
 import {Response} from 'express'
 import {EntityNotFoundError} from 'typeorm'
+import {ConfigService} from '@nestjs/config'
 
 interface IExceptionResponse {
   statusCode: number
@@ -10,6 +11,8 @@ interface IExceptionResponse {
 
 @Catch()
 export class AppExceptionFilter implements ExceptionFilter {
+  constructor(private configService: ConfigService) {}
+
   // private readonly logger = new Logger(HttpExceptionFilter.name) // TODO implement logging
 
   catch(exception: unknown, host: ArgumentsHost) {
@@ -19,7 +22,7 @@ export class AppExceptionFilter implements ExceptionFilter {
     if (exception instanceof NotFoundException) {
       const {statusCode, error} = exception.getResponse() as IExceptionResponse
       return response
-        .status(statusCode )
+        .status(statusCode)
         .json({status: statusCode, message: error})
     }
 
@@ -37,6 +40,15 @@ export class AppExceptionFilter implements ExceptionFilter {
       return response
         .status(HttpStatus.NOT_FOUND)
         .json({status: HttpStatus.NOT_FOUND, message: exception.message})
+    }
+
+    if (this.configService.get('NODE_ENV') === 'development' && exception instanceof Error) {
+      return response
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: exception.stack,
+        })
     }
 
     return response

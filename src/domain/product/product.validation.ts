@@ -2,6 +2,7 @@ import * as Joi from '@hapi/joi'
 import 'joi-extract-type'
 
 export const productPostSchema = Joi.object({
+  typeId: Joi.number().integer().required(),
   serial: Joi.string().alphanum().min(5).max(15).required(),
   title: Joi.string().min(5).max(55).required(),
   scale: Joi.string().min(3).max(6),

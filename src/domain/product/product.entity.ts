@@ -1,11 +1,16 @@
 import {
-  BaseEntity, Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn,
+  BaseEntity, Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne,
+  RelationId,
 } from 'typeorm'
+import {ProductType} from '../productType/productType.entity'
 
 @Entity('products')
 export class Product extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
+
+  @RelationId((product: Product) => product.type)
+  typeId: number
 
   @Column({length: 15})
   serial: string
@@ -16,7 +21,7 @@ export class Product extends BaseEntity {
   @Column({length: 6, nullable: true})
   scale: string
 
-  @Column({width: 5})
+  @Column({width: 5, type: 'int'})
   weight: number
 
   @Column({length: 55, nullable: true})
@@ -42,4 +47,7 @@ export class Product extends BaseEntity {
 
   @DeleteDateColumn()
   deletedAt: Date
+
+  @ManyToOne(() => ProductType)
+  type: ProductType
 }

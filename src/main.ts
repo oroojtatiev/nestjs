@@ -9,7 +9,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService)
 
   app.useGlobalInterceptors(new ResponseInterceptor())
-  app.useGlobalFilters(new AppExceptionFilter())
+  app.useGlobalFilters(new AppExceptionFilter(configService))
 
   await app.listen(configService.get('APP_PORT'))
 }
