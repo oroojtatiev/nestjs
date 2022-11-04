@@ -1,5 +1,6 @@
 import {Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpStatus} from '@nestjs/common'
 import {mergeMap, Observable} from 'rxjs'
+import {isEmptyObject} from '../../functions/helper'
 
 export interface IResponse<T> {
   status: HttpStatus
@@ -18,8 +19,14 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, IResponse<T>> 
       if (project === undefined) return {status}
 
       if (project.status) status = project.status
-      if (project.data) data = await project.data
       if (project.message) message = project.message
+
+      delete project.status
+      delete project.message
+
+      if (Array.isArray(project)) data = project
+      else if (isEmptyObject(project)) data = undefined
+      else data = project.data
 
       return {
         status: status,
