@@ -1,5 +1,5 @@
 import {
-  Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Query, UsePipes,
+  Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Query, UseGuards, UsePipes,
 } from '@nestjs/common'
 import {UserRepository} from './user.repository'
 import {UserService} from './user.service'
@@ -8,6 +8,7 @@ import {MailService} from '../../mail/mail.service'
 import {prepareData} from '../../functions/date'
 import {CreateUserDto, UpdateUserDto, createUserSchema, updateUserSchema} from './user.validation'
 import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
+import {JwtAuthGuard} from '../../auth/jwt.guard'
 
 @Controller('users')
 export class UserController {
@@ -58,6 +59,7 @@ export class UserController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new BodyValidatePipe(updateUserSchema))
   async update(@Param('id') id: number, @Body() data: UpdateUserDto) {
     await this.userRepository.update(id, data)
@@ -65,6 +67,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async delete(@Param('id') id: number) {
     await this.userRepository.deleteOrFail(id)
 

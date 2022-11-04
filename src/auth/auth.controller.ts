@@ -5,7 +5,6 @@ import {UserService} from '../domain/user/user.service'
 import {AuthService} from './auth.service'
 import {BodyValidatePipe, QueryValidatePipe} from '../infrastructure/pipes/validation.pipe'
 import {LoginDto, loginSchema} from './auth.validation'
-import {IResponse} from '../infrastructure/interceptor/response.interceptor'
 
 @Controller('auth')
 export class AuthController {
@@ -37,9 +36,7 @@ export class AuthController {
     const isValidPassword = await this.authService.validatePassword(body.password, user)
 
     if (isValidPassword) {
-      const token = await this.authService.authorize(user)
-
-      return token
+      return await this.authService.authorize(user)
     } else {
       throw new UnauthorizedException({message: 'Email or password is not correct'})
     }

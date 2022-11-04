@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes} from '@nestjs/common'
+import {Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UsePipes} from '@nestjs/common'
 import {ProductTypeRepository} from './productType.repository'
 import {ProductTypeService} from './productType.service'
 import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
@@ -9,6 +9,7 @@ import {
   productTypePutSchema,
 } from './productType.validation'
 import {prepareData} from '../../functions/date'
+import {JwtAuthGuard} from '../../auth/jwt.guard'
 
 @Controller('product/type')
 export class ProductTypeController {
@@ -30,6 +31,7 @@ export class ProductTypeController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new BodyValidatePipe(productTypePostSchema))
   async create(@Body() data: ProductTypePostDto) {
     const product = await this.productTypeRepository.save(data)
@@ -38,6 +40,7 @@ export class ProductTypeController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new BodyValidatePipe(productTypePutSchema))
   async update(@Param('id') id: number, @Body() data: ProductTypePutDto) {
     await this.productTypeRepository.update(id, data)
@@ -45,6 +48,7 @@ export class ProductTypeController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async delete(@Param('id') id: number) {
     await this.productTypeRepository.deleteOrFail(id)
 

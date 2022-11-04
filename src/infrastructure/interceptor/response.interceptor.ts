@@ -27,7 +27,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, IResponse<T>> 
       if (Array.isArray(project)) data = await project
       else if (typeof project === 'string') data = project
       else if (isEmptyObject(project)) data = undefined
-      else data = await project.data
+      else data = await project.data || project
 
       return {
         status: status,
