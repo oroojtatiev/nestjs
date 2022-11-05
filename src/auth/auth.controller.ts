@@ -27,7 +27,7 @@ export class AuthController {
   @Post('login')
   @UsePipes(new BodyValidatePipe(loginSchema))
   async login(@Body() body: LoginDto) {
-    const user = await this.userService.getUser(body.email)
+    const user = await this.userService.getUserByEmail(body.email)
 
     if (!user) {
       throw new NotAcceptableException('Could not find the user')

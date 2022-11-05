@@ -3,6 +3,13 @@ import {PassportStrategy} from '@nestjs/passport'
 import {Injectable} from '@nestjs/common'
 import {ConfigService} from '@nestjs/config'
 
+interface ValidatePayload {
+  username: string
+  sub: number
+  iat: number
+  exp: number
+}
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -15,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(payload: any) { // TODO must be typed
+  async validate(payload: ValidatePayload) {
     return {userId: payload.sub, username: payload.username}
   }
 }

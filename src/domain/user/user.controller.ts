@@ -20,21 +20,21 @@ export class UserController {
   ) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async getList(@Query('offset') offset: number, @Query('limit') limit: number) {
-    return this.userService.prepareList(offset, limit)
+    return this.userService.getList(offset, limit)
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async getOne(@Param('id') id: number) {
-    const result = await this.userRepository.getOneOrFail(id)
-
-    return prepareData(result)
+    return await this.userService.getOne(id)
   }
 
   @Post('register')
   @UsePipes(new BodyValidatePipe(createUserSchema))
   async create(@Body() body: CreateUserDto) {
-    const isEmailExist = await this.userService.checkEmail(body.email)
+    const isEmailExist = await this.userService.checkEmailExist(body.email)
 
     if (isEmailExist) {
       throw new HttpException('This email has been already registered', HttpStatus.OK)
