@@ -8,6 +8,8 @@ import {ProductPostDto, productPostSchema, ProductPutDto, productPutSchema} from
 import {ProductTypeService} from '../productType/productType.service'
 import {prepareData} from '../../functions/date'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
+import {Product} from './product.entity'
+import {ProductTypeRepository} from '../productType/productType.repository'
 
 @Controller('products')
 export class ProductController {
@@ -15,6 +17,7 @@ export class ProductController {
     private readonly productRepository: ProductRepository,
     private readonly productService: ProductService,
     private readonly productTypeService: ProductTypeService,
+    private readonly productTypeRepository: ProductTypeRepository,
   ) {}
 
   @Get()
@@ -33,13 +36,22 @@ export class ProductController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new BodyValidatePipe(productPostSchema))
   async create(@Body() data: ProductPostDto) {
-    const isTypeIdNotExist = await this.productTypeService.isNotExist(data.typeId)
+    const isTypeIdNotExist = await this.productTypeService.checkIsNotExists(data.typeId)
 
     if (isTypeIdNotExist) throw new HttpException('This typeId is not exist', HttpStatus.BAD_REQUEST)
 
-    const product = await this.productRepository.save(data)
+    const productType = await this.productTypeRepository.getOneOrFail(data.typeId)
 
-    return prepareData(product)
+    const product = new Product()
+    product.serial = data.serial
+    product.title = data.title
+    product.weight = data.weight
+    product.price = data.price
+    product.type = productType
+
+    const newProduct = await this.productRepository.save(product)
+
+    return prepareData(newProduct)
   }
 
   @Put(':id')

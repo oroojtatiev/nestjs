@@ -3,7 +3,7 @@ import {
 } from '@nestjs/common'
 import {UserService} from '../domain/user/user.service'
 import {AuthService} from './auth.service'
-import {BodyValidatePipe, QueryValidatePipe} from '../infrastructure/pipes/validation.pipe'
+import {BodyValidatePipe} from '../infrastructure/pipes/validation.pipe'
 import {LoginDto, loginSchema} from './auth.validation'
 
 @Controller('auth')
@@ -14,7 +14,7 @@ export class AuthController {
   ) {}
 
   @Get('confirm')
-  async verifyEmail(@Query(new QueryValidatePipe(['token'])) token: string) {
+  async confirmEmail(@Query('token') token: string) {
     const email = await this.authService.decodeConfirmationToken(token)
 
     await this.userService.confirmEmail(email)
