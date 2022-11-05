@@ -1,6 +1,6 @@
 import {Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpStatus} from '@nestjs/common'
 import {mergeMap, Observable} from 'rxjs'
-import {isEmptyObject} from '../../functions/helper'
+import {isEmptyObject} from '../../helpers/object'
 
 export interface IResponse<T> {
   status: HttpStatus

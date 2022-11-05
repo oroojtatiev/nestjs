@@ -3,7 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
 import {UserRepository} from './user.repository'
 import {CreateUserDto} from './user.validation'
-import {prepareData} from '../../functions/helper'
+import {prepareData} from '../../helpers/data'
 
 const saltRounds = 10
 

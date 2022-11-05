@@ -9,7 +9,7 @@ import {ProductTypeService} from '../productType/productType.service'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
 import {Product} from './product.entity'
 import {ProductTypeRepository} from '../productType/productType.repository'
-import {prepareData} from '../../functions/helper'
+import {prepareData} from '../../helpers/data'
 
 @Controller('products')
 export class ProductController {

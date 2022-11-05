@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common'
 import {InjectRepository} from '@nestjs/typeorm'
 import {ProductRepository} from './product.repository'
-import {prepareData} from '../../functions/helper'
+import {prepareData} from '../../helpers/data'
 
 @Injectable()
 export class ProductService {

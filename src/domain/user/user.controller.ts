@@ -8,7 +8,7 @@ import {MailService} from '../../mail/mail.service'
 import {CreateUserDto, UpdateUserDto, createUserSchema, updateUserSchema} from './user.validation'
 import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
-import {prepareData} from '../../functions/helper'
+import {prepareData} from '../../helpers/data'
 
 @Controller('users')
 export class UserController {

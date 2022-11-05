@@ -9,7 +9,7 @@ import {
   productTypePutSchema,
 } from './productType.validation'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
-import {prepareData} from '../../functions/helper'
+import {prepareData} from '../../helpers/data'
 
 @Controller('product/type')
 export class ProductTypeController {
