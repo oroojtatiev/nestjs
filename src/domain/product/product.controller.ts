@@ -51,7 +51,7 @@ export class ProductController {
 
     const newProduct = await this.productRepository.save(product)
 
-    return prepareData(newProduct)
+    return this.productService.prepareSavedProduct(newProduct)
   }
 
   @Put(':id')
