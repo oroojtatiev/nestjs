@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common'
 import {InjectRepository} from '@nestjs/typeorm'
 import {ProductRepository} from './product.repository'
-import {prepareData} from '../../functions/date'
+import {prepareData} from '../../functions/helper'
 
 @Injectable()
 export class ProductService {
@@ -11,7 +11,6 @@ export class ProductService {
 
   async prepareList(offset: number, limit: number) {
     const data = await this.productRepository.getList(offset, limit)
-
     return data.map((el) => prepareData(el))
   }
 }

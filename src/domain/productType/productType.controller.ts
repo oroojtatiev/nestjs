@@ -8,8 +8,8 @@ import {
   ProductTypePutDto,
   productTypePutSchema,
 } from './productType.validation'
-import {prepareData} from '../../functions/date'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
+import {prepareData} from '../../functions/helper'
 
 @Controller('product/type')
 export class ProductTypeController {

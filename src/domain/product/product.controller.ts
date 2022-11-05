@@ -6,10 +6,10 @@ import {ProductService} from './product.service'
 import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {ProductPostDto, productPostSchema, ProductPutDto, productPutSchema} from './product.validation'
 import {ProductTypeService} from '../productType/productType.service'
-import {prepareData} from '../../functions/date'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
 import {Product} from './product.entity'
 import {ProductTypeRepository} from '../productType/productType.repository'
+import {prepareData} from '../../functions/helper'
 
 @Controller('products')
 export class ProductController {

@@ -2,9 +2,8 @@ import {Injectable} from '@nestjs/common'
 import {InjectRepository} from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
 import {UserRepository} from './user.repository'
-import {getFormattedDateTime, prepareData} from '../../functions/date'
-import {User} from './user.entity'
 import {CreateUserDto} from './user.validation'
+import {prepareData} from '../../functions/helper'
 
 const saltRounds = 10
 
@@ -49,12 +48,5 @@ export class UserService {
         email: username,
       },
     })
-  }
-
-  async prepareUser(user: User) {
-    const {updatedAt, deletedAt, password, ...data} = user
-    const createdAt = getFormattedDateTime(user.createdAt)
-
-    return {...data, createdAt: createdAt}
   }
 }

@@ -1,8 +1,7 @@
 import {Injectable} from '@nestjs/common'
 import {InjectRepository} from '@nestjs/typeorm'
 import {ProductTypeRepository} from './productType.repository'
-import {ProductType} from './productType.entity'
-import {getFormattedDateTime} from '../../functions/date'
+import {prepareData} from '../../functions/helper'
 
 @Injectable()
 export class ProductTypeService {
@@ -20,16 +19,9 @@ export class ProductTypeService {
     return r === null
   }
 
-  prepareProductType(product: ProductType) {
-    const {updatedAt, deletedAt, ...data} = product
-    const createdAt = getFormattedDateTime(product.createdAt)
-
-    return {...data, createdAt: createdAt}
-  }
-
   async prepareList(offset: number, limit: number) {
     const data = await this.productTypeRepository.getList(offset, limit)
 
-    return data.map((el) => this.prepareProductType(el))
+    return data.map((el) => prepareData(el))
   }
 }

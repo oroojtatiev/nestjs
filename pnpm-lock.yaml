@@ -18,7 +18,6 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.0.0
   '@typescript-eslint/parser': ^5.0.0
   bcrypt: ^5.1.0
-  date-fns: ^2.29.3
   dotenv: ^16.0.3
   eslint: ^8.26.0
   joi-extract-type: ^15.0.8
@@ -46,7 +45,6 @@ dependencies:
   '@nestjs/platform-express': 9.1.4_osbqhc5bxkxr7p4xaw5wgzf7bi
   '@nestjs/typeorm': 9.0.1_u6s7yl4kxjrfar7vjj57aweove
   bcrypt: 5.1.0
-  date-fns: 2.29.3
   dotenv: 16.0.3
   joi-extract-type: 15.0.8_@hapi+joi@17.1.1
   passport: 0.6.0

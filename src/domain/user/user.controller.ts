@@ -5,10 +5,10 @@ import {UserRepository} from './user.repository'
 import {UserService} from './user.service'
 import {AuthService} from '../../auth/auth.service'
 import {MailService} from '../../mail/mail.service'
-import {prepareData} from '../../functions/date'
 import {CreateUserDto, UpdateUserDto, createUserSchema, updateUserSchema} from './user.validation'
 import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
+import {prepareData} from '../../functions/helper'
 
 @Controller('users')
 export class UserController {
@@ -46,7 +46,7 @@ export class UserController {
     await this.mailService.sendConfirmation(body.email, token)
 
     return {
-      data: this.userService.prepareUser(user),
+      data: prepareData(user),
       message: 'The confirmation email has been sent',
     }
   }
