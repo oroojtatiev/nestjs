@@ -3,7 +3,7 @@ import {
 } from 'typeorm'
 import {Product} from '../product/product.entity'
 
-@Entity('product_types')
+@Entity()
 export class ProductType extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number

@@ -4,7 +4,7 @@ import {
 } from 'typeorm'
 import {ProductType} from '../productType/productType.entity'
 
-@Entity('products')
+@Entity()
 export class Product extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
@@ -38,6 +38,9 @@ export class Product extends BaseEntity {
 
   @Column({default: 0})
   views: number
+
+  @Column({nullable: true})
+  quantity: number
 
   @CreateDateColumn()
   createdAt: Date

@@ -1,8 +1,9 @@
 import {
-  BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn,
+  BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn,
 } from 'typeorm'
+import {Order} from '../order/order.entity'
 
-@Entity('users')
+@Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
@@ -36,4 +37,7 @@ export class User extends BaseEntity {
 
   @DeleteDateColumn({nullable: true})
   deletedAt: Date
+
+  @OneToMany(() => Order, orders => orders.user)
+  orders: Order[]
 }

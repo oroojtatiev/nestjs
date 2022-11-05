@@ -1,10 +1,10 @@
 import {MigrationInterface, QueryRunner} from 'typeorm'
 
-export class products1667419192828 implements MigrationInterface {
-  name = 'products1667419192828'
+export class product1667419192828 implements MigrationInterface {
+  name = 'product1667419192828'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`CREATE TABLE "products"
+    await queryRunner.query(`CREATE TABLE "product"
                              (
                                  "id"          SERIAL                NOT NULL,
                                  "serial"      character varying(15) NOT NULL,
@@ -24,7 +24,7 @@ export class products1667419192828 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query('DROP TABLE IF EXISTS "products"')
+    await queryRunner.query('DROP TABLE IF EXISTS "product"')
   }
 
 }

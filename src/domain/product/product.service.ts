@@ -18,7 +18,9 @@ export class ProductService {
   async prepareSavedProduct(product: Product) {
     const item = await this.productRepository.findOne({
       where: {id: product.id},
-      relations: ['type'],
+      relations: {
+        type: true,
+      },
       select: {
         type: {
           id: true,

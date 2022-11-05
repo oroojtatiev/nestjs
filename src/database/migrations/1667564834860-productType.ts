@@ -1,10 +1,10 @@
 import {MigrationInterface, QueryRunner} from 'typeorm'
 
-export class productTypes1667564834860 implements MigrationInterface {
-  name = 'productTypes1667564834860'
+export class productType1667564834860 implements MigrationInterface {
+  name = 'productType1667564834860'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`CREATE TABLE "product_types"
+    await queryRunner.query(`CREATE TABLE "product_type"
                              (
                                  "id"        SERIAL                NOT NULL,
                                  "name"      character varying(30) NOT NULL,
@@ -13,18 +13,18 @@ export class productTypes1667564834860 implements MigrationInterface {
                                  "deletedAt" TIMESTAMP,
                                  CONSTRAINT "PK_6ad7b08e6491a02ebc9ed82019d" PRIMARY KEY ("id")
                              )`)
-    await queryRunner.query(`ALTER TABLE "products"
+    await queryRunner.query(`ALTER TABLE "product"
         ADD "typeId" integer`)
-    await queryRunner.query(`ALTER TABLE "products"
-        ADD CONSTRAINT "FK_6129aa5c0f65c073ea2f7452195" FOREIGN KEY ("typeId") REFERENCES "product_types" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+    await queryRunner.query(`ALTER TABLE "product"
+        ADD CONSTRAINT "FK_53bafe3ecc25867776c07c9e666" FOREIGN KEY ("typeId") REFERENCES "product_type" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "products"
-        DROP CONSTRAINT IF EXISTS "FK_6129aa5c0f65c073ea2f7452195"`)
-    await queryRunner.query(`ALTER TABLE "products"
+    await queryRunner.query(`ALTER TABLE "product"
+        DROP CONSTRAINT IF EXISTS "FK_53bafe3ecc25867776c07c9e666"`)
+    await queryRunner.query(`ALTER TABLE "product"
         DROP COLUMN IF EXISTS "typeId"`)
-    await queryRunner.query('DROP TABLE IF EXISTS "product_types"')
+    await queryRunner.query('DROP TABLE IF EXISTS "product_type"')
   }
 
 }
