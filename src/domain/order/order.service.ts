@@ -10,7 +10,7 @@ export class OrderService {
     @InjectRepository(OrderRepository) private readonly orderRepository: OrderRepository,
   ) {}
 
-  async prepareList(offset: number, limit: number) {
+  async getList(offset: number, limit: number) {
     const data = await this.orderRepository.getList(offset, limit)
     return data.map((el) => prepareData(el))
   }

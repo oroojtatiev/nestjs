@@ -3,7 +3,7 @@ import {PassportStrategy} from '@nestjs/passport'
 import {Injectable} from '@nestjs/common'
 import {ConfigService} from '@nestjs/config'
 
-interface ValidatePayload {
+interface TokenPayload {
   username: string
   sub: number
   iat: number
@@ -22,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(payload: ValidatePayload) {
+  async validate(payload: TokenPayload) {
     return {userId: payload.sub, username: payload.username}
   }
 }

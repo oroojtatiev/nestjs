@@ -3,10 +3,7 @@ import {ProductTypeRepository} from './productType.repository'
 import {ProductTypeService} from './productType.service'
 import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {
-  ProductTypePostDto,
-  productTypePostSchema,
-  ProductTypePutDto,
-  productTypePutSchema,
+  ProductTypePostDto, productTypePostSchema, ProductTypePutDto, productTypePutSchema,
 } from './productType.validation'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
 import {prepareData} from '../../helpers/data'
