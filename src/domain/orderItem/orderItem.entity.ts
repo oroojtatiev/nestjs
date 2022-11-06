@@ -1,4 +1,4 @@
-import {BaseEntity, Entity, PrimaryGeneratedColumn, Column, JoinTable, ManyToOne, RelationId} from 'typeorm'
+import {BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, RelationId} from 'typeorm'
 import {Product} from '../product/product.entity'
 import {Order} from '../order/order.entity'
 
@@ -10,6 +10,9 @@ export class OrderItem extends BaseEntity {
   @RelationId((orderItem: OrderItem) => orderItem.order)
   orderId: number
 
+  @RelationId((orderItem: OrderItem) => orderItem.product)
+  productId: number
+
   @Column()
   quantity: number
 
@@ -18,7 +21,8 @@ export class OrderItem extends BaseEntity {
   })
   order: Order
 
-  @ManyToOne(() => Product)
-  @JoinTable()
+  @ManyToOne(() => Product, product => product.id, {
+    nullable: false,
+  })
   product: Product
 }

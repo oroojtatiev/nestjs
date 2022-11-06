@@ -24,10 +24,14 @@ export class OrderRepository extends Repository<Order> {
     })
   }
 
-  async deleteOrFail(id: number) {
-    await this.findOneOrFail({
-      where: {id},
+  async getOrderWithProducts(id: number) { // TODO implement join and use in controller
+    return this.findOne({
+      where: {
+        id: id,
+      },
+      relations: {
+        orderItems: true,
+      },
     })
-    return this.delete(id)
   }
 }

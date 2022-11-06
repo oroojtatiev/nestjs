@@ -8,6 +8,7 @@ import {MailModule} from './mail/mail.module'
 import {UserModule} from './domain/user/user.module'
 import {ProductModule} from './domain/product/product.module'
 import {ProductTypeModule} from './domain/productType/productType.module'
+import {OrderModule} from './domain/order/order.module'
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {ProductTypeModule} from './domain/productType/productType.module'
     UserModule,
     ProductModule,
     ProductTypeModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
