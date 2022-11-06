@@ -6,7 +6,7 @@ export class BodyValidatePipe implements PipeTransform {
   constructor(private schema: Joi.ObjectSchema) {}
 
   transform(value: object | string, metadata: ArgumentMetadata) {
-    if (typeof value === 'string') return value
+    if (typeof value === 'string' || metadata.type !== 'body') return value
 
     const result = this.schema.validate(value, {abortEarly: false})
 
