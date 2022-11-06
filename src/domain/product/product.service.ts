@@ -10,7 +10,7 @@ export class ProductService {
     @InjectRepository(ProductRepository) private readonly productRepository: ProductRepository,
   ) {}
 
-  async prepareList(offset: number, limit: number) {
+  async getList(offset: number, limit: number) {
     const data = await this.productRepository.getList(offset, limit)
     return data.map((el) => prepareData(el))
   }

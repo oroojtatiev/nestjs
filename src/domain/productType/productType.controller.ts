@@ -20,7 +20,7 @@ export class ProductTypeController {
 
   @Get()
   async getList(@Query('offset') offset: number, @Query('limit') limit: number) {
-    return this.productTypeService.prepareList(offset, limit)
+    return this.productTypeService.getList(offset, limit)
   }
 
   @Get(':id')

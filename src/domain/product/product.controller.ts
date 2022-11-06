@@ -22,13 +22,12 @@ export class ProductController {
 
   @Get()
   async getList(@Query('offset') offset: number, @Query('limit') limit: number) {
-    return this.productService.prepareList(offset, limit)
+    return this.productService.getList(offset, limit)
   }
 
   @Get(':id')
   async getOne(@Param('id') id: number) {
     const result = await this.productRepository.getOneOrFail(id)
-
     return prepareData(result)
   }
 
