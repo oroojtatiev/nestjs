@@ -24,6 +24,21 @@ export class ProductRepository extends Repository<Product> {
     })
   }
 
+  async getOneWithType(id: number) {
+    return await this.findOne({
+      where: {id: id},
+      relations: {
+        type: true,
+      },
+      select: {
+        type: {
+          id: true,
+          name: true,
+        },
+      },
+    })
+  }
+
   async deleteOrFail(id: number) {
     await this.findOneOrFail({
       where: {id},

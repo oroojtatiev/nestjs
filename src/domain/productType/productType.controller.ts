@@ -23,7 +23,6 @@ export class ProductTypeController {
   @Get(':id')
   async getOne(@Param('id') id: number) {
     const result = await this.productTypeRepository.getOneOrFail(id)
-
     return prepareData(result)
   }
 
@@ -32,7 +31,6 @@ export class ProductTypeController {
   @UsePipes(new BodyValidatePipe(productTypePostSchema))
   async create(@Body() data: ProductTypePostDto) {
     const product = await this.productTypeRepository.save(data)
-
     return prepareData(product)
   }
 
@@ -48,7 +46,6 @@ export class ProductTypeController {
   @UseGuards(JwtAuthGuard)
   async delete(@Param('id') id: number) {
     await this.productTypeRepository.deleteOrFail(id)
-
     return {
       message: `Product type with ${id} has been deleted`,
     }

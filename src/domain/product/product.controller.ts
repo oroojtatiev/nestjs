@@ -65,7 +65,6 @@ export class ProductController {
   @UseGuards(JwtAuthGuard)
   async delete(@Param('id') id: number) {
     await this.productRepository.deleteOrFail(id)
-
     return {
       message: `Product with ${id} has been deleted`,
     }

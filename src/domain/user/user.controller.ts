@@ -54,7 +54,6 @@ export class UserController {
   @Get('confirm')
   async verifyEmail(@Query('token') token: string) {
     const email = await this.authService.decodeConfirmationToken(token)
-
     await this.userService.confirmEmail(email)
   }
 
@@ -70,7 +69,6 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async delete(@Param('id') id: number) {
     await this.userRepository.deleteOrFail(id)
-
     return {
       message: `Product with ID "${id}" has been deleted`,
     }
