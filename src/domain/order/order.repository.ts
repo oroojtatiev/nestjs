@@ -4,7 +4,7 @@ import {Order} from './order.entity'
 
 @Injectable()
 export class OrderRepository extends Repository<Order> {
-  constructor(private dataSource: DataSource)  {
+  constructor(private dataSource: DataSource) {
     super(Order, dataSource.createEntityManager())
   }
 
@@ -24,13 +24,15 @@ export class OrderRepository extends Repository<Order> {
     })
   }
 
-  async getOrderWithProducts(id: number) { // TODO implement join and use in controller
-    return this.findOne({
+  async getOrderWithProducts(id: number) {
+    return this.find({
+      relations: {
+        orderItems: {
+          product: true,
+        },
+      },
       where: {
         id: id,
-      },
-      relations: {
-        orderItems: true,
       },
     })
   }

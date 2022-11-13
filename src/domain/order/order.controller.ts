@@ -54,7 +54,7 @@ export class OrderController {
     await this.orderRepository.save(orderEntity)
 
     return {
-      data: await this.orderService.getSavedOrder(orderEntity),
+      data: await this.orderRepository.getOrderWithProducts(orderEntity.id),
       message: 'Order has been successfully created',
     }
   }
