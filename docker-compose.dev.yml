@@ -10,19 +10,8 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - ${DB_PORT}:${DB_PORT}
-    networks:
-      default:
-      outside:
-        ipv4_address: 192.168.220.220
     volumes:
       - vol_postgres:/var/lib/postgresql/data
     restart: always
-networks:
-  outside:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.220.0/24
 volumes:
   vol_postgres:
