@@ -20,9 +20,15 @@ export class ProductController {
     private readonly productTypeRepository: ProductTypeRepository,
   ) {}
 
-  @Get()
+  @Get('admin')
+  @UseGuards(JwtAuthGuard)
   async getList(@Query('offset') offset: number, @Query('limit') limit: number) {
     return this.productService.getList(offset, limit)
+  }
+
+  @Get()
+  async getListForUser(@Query('offset') offset: number, @Query('limit') limit: number) {
+    return this.productService.getListForUser(offset, limit)
   }
 
   @Get(':id')
@@ -42,11 +48,15 @@ export class ProductController {
     const productType = await this.productTypeRepository.getOneOrFail(data.typeId)
 
     const product = new Product()
+    product.type = productType
     product.serial = data.serial
     product.title = data.title
+    product.scale = data.scale
     product.weight = data.weight
+    product.image = data.image
     product.price = data.price
-    product.type = productType
+    product.inStock = data.inStock
+    product.isPublished = data.isPublished
 
     const newProduct = await this.productRepository.save(product)
 

@@ -13,6 +13,11 @@ export class ProductService {
   ) {}
 
   async getList(offset: number, limit: number) {
+    const data = await this.productRepository.getListForUser(offset, limit)
+    return data.map((el) => prepareData(el))
+  }
+
+  async getListForUser(offset: number, limit: number) {
     const data = await this.productRepository.getList(offset, limit)
     return data.map((el) => prepareData(el))
   }

@@ -18,6 +18,15 @@ export class ProductRepository extends Repository<Product> {
     })
   }
 
+  async getListForUser(offset = 0, limit = 10): Promise<Product[]> {
+    return await this.createQueryBuilder('product')
+      .where('product.isPublished = true')
+      .orderBy('product.id', 'ASC')
+      .skip(offset)
+      .take(limit)
+      .getMany()
+  }
+
   async getOneOrFail(id: number) {
     return this.findOneOrFail({
       where: {id},
