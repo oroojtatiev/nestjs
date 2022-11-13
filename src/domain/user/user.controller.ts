@@ -8,7 +8,6 @@ import {MailService} from '../../mail/mail.service'
 import {CreateUserDto, UpdateUserDto, createUserSchema, updateUserSchema} from './user.validation'
 import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
-import {prepareData} from '../../helpers/data'
 
 @Controller('users')
 export class UserController {
@@ -46,7 +45,7 @@ export class UserController {
     await this.mailService.sendConfirmation(body.email, token)
 
     return {
-      data: prepareData(user),
+      data: this.userService.prepareUser(user),
       message: 'The confirmation email has been sent',
     }
   }
