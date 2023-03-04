@@ -12,15 +12,15 @@ import {AuthService} from '../auth/auth.service'
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: process.env.AWS_MAIL_ENDPOINT,
+        host: process.env.AWS_SMTP_ENDPOINT,
         secure: false,
         auth: {
-          user: process.env.AWS_MAIL_USER,
-          pass: process.env.AWS_MAIL_PASSWORD,
+          user: process.env.AWS_SMTP_USERNAME,
+          pass: process.env.AWS_SMTP_PASSWORD,
         },
       },
       defaults: {
-        from: `"No Reply" ${process.env.AWS_MAIL_FROM}`,
+        from: `"No Reply" ${process.env.AWS_SMTP_EMAIL}`,
       },
       template: {
         dir: join(__dirname, 'template'),

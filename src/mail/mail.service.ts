@@ -15,7 +15,7 @@ export class MailService {
 
     await this.mailerService.sendMail({
       to: email,
-      from: `"No Reply" <${this.configService.get('AWS_MAIL_FROM')}>`,
+      from: `"No Reply" <${this.configService.get('AWS_SMTP_EMAIL')}>`,
       subject: 'Email confirmation',
       template: 'confirmation',
       context: {

@@ -14,8 +14,8 @@ export const schema = Joi.object({
   AUTH_JWT_SECRET: Joi.string().required(),
   AUTH_JWT_TOKEN_EXPIRE_SECONDS: Joi.string().required(),
   AUTH_CONFIRM_URL: Joi.string().required(),
-  AWS_MAIL_ENDPOINT: Joi.string().required(),
-  AWS_MAIL_USER: Joi.string().required(),
-  AWS_MAIL_PASSWORD: Joi.string().required(),
-  AWS_MAIL_FROM: Joi.string().required(),
+  AWS_SMTP_ENDPOINT: Joi.string().required(),
+  AWS_SMTP_USERNAME: Joi.string().required(),
+  AWS_SMTP_PASSWORD: Joi.string().required(),
+  AWS_SMTP_EMAIL: Joi.string().required(),
 })
