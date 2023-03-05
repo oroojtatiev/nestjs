@@ -38,9 +38,14 @@ export class ProductRepository extends Repository<Product> {
       where: {id: id},
       relations: {
         type: true,
+        brand: true,
       },
       select: {
         type: {
+          id: true,
+          name: true,
+        },
+        brand: {
           id: true,
           name: true,
         },

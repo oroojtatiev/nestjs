@@ -9,6 +9,7 @@ import {ProductTypeService} from '../productType/productType.service'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
 import {Product} from './product.entity'
 import {ProductTypeRepository} from '../productType/productType.repository'
+import {BrandRepository} from '../brand/brand.repository'
 import {prepareData} from '../../helpers/data'
 
 @Controller('products')
@@ -18,6 +19,7 @@ export class ProductController {
     private readonly productService: ProductService,
     private readonly productTypeService: ProductTypeService,
     private readonly productTypeRepository: ProductTypeRepository,
+    private readonly brandRepository: BrandRepository,
   ) {}
 
   @Get('admin')
@@ -46,9 +48,11 @@ export class ProductController {
     if (isTypeIdNotExist) throw new HttpException('This typeId is not exist', HttpStatus.BAD_REQUEST)
 
     const productType = await this.productTypeRepository.getOneOrFail(data.typeId)
+    const brand = await this.brandRepository.getOneOrFail(data.brandId)
 
     const product = new Product()
     product.type = productType
+    product.brand = brand
     product.serial = data.serial
     product.title = data.title
     product.scale = data.scale

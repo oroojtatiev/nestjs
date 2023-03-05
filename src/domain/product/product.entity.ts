@@ -3,6 +3,7 @@ import {
   RelationId,
 } from 'typeorm'
 import {ProductType} from '../productType/productType.entity'
+import {Brand} from '../brand/brand.entity'
 
 @Entity()
 export class Product extends BaseEntity {
@@ -53,4 +54,7 @@ export class Product extends BaseEntity {
 
   @ManyToOne(() => ProductType)
   type: ProductType
+
+  @ManyToOne(() => Brand)
+  brand: Brand
 }
