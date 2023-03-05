@@ -44,6 +44,7 @@ export class UserService {
 
     return await this.userRepository.save({
       ...dto,
+      email: dto.email.toLowerCase(),
       password: passwordHash,
     })
   }
