@@ -2,7 +2,7 @@ import * as Joi from '@hapi/joi'
 import 'joi-extract-type'
 
 export const productTypePostSchema = Joi.object({
-  name: Joi.string().min(5).max(30).required(),
+  name: Joi.string().min(4).max(30).required(),
 })
 
 export const productTypePutSchema = productTypePostSchema
