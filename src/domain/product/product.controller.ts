@@ -56,7 +56,7 @@ export class ProductController {
     if (isTypeIdNotExist) throw new HttpException('This type_id is not exist', HttpStatus.BAD_REQUEST)
 
     const productType = await this.productTypeRepository.getOneOrFail(data.type_id)
-    const brand = await this.brandRepository.getOneOrFail(data.brandId)
+    const brand = await this.brandRepository.getOneOrFail(data.brand_id)
 
     const product = new Product()
     product.type = productType

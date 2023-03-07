@@ -1,6 +1,6 @@
 import {
   BaseEntity, Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne,
-  RelationId,
+  RelationId, JoinColumn,
 } from 'typeorm'
 import {ProductType} from '../productType/productType.entity'
 import {Brand} from '../brand/brand.entity'
@@ -53,8 +53,10 @@ export class Product extends BaseEntity {
   deleted_at: Date
 
   @ManyToOne(() => ProductType)
+  @JoinColumn({name: 'type_id'})
   type: ProductType
 
   @ManyToOne(() => Brand)
+  @JoinColumn({name: 'brand_id'})
   brand: Brand
 }
