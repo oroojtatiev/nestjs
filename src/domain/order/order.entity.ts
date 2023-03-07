@@ -12,16 +12,16 @@ export class Order extends BaseEntity {
   id: number
 
   @RelationId((order: Order) => order.payment)
-  paymentId: number
+  payment_id: number
 
   @CreateDateColumn()
-  createdAt: Date
+  created_at: Date
 
   @UpdateDateColumn()
-  updatedAt: Date
+  updated_at: Date
 
   @DeleteDateColumn()
-  deletedAt: Date
+  deleted_at: Date
 
   @ManyToOne(() => User, user => user.orders, {
     nullable: false,
@@ -32,7 +32,7 @@ export class Order extends BaseEntity {
     nullable: false,
     cascade: true,
   })
-  orderItems: OrderItem[]
+  order_items: OrderItem[]
 
   @OneToOne(() => Payment, payment => payment.order, {
     nullable: false,

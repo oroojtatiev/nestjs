@@ -20,7 +20,7 @@ export class ProductRepository extends Repository<Product> {
 
   async getListForUser(offset = 0, limit = 10): Promise<Product[]> {
     return await this.createQueryBuilder('product')
-      .where('product.isPublished = true')
+      .where('product.is_published = true')
       .orderBy('product.id', 'ASC')
       .skip(offset)
       .take(limit)

@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common'
-import {DataSource, Repository} from 'typeorm'
+import {DataSource, DeleteResult, Repository} from 'typeorm'
 import {Brand} from './brand.entity'
 
 @Injectable()
@@ -18,13 +18,13 @@ export class BrandRepository extends Repository<Brand> {
     })
   }
 
-  async getOneOrFail(id: number) {
+  async getOneOrFail(id: number): Promise<Brand> {
     return this.findOneOrFail({
       where: {id},
     })
   }
 
-  async deleteOrFail(id: number) {
+  async deleteOrFail(id: number): Promise<DeleteResult> {
     await this.findOneOrFail({
       where: {id},
     })

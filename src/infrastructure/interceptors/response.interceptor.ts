@@ -1,16 +1,11 @@
-import {Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpStatus} from '@nestjs/common'
+import {Injectable, NestInterceptor, ExecutionContext, CallHandler} from '@nestjs/common'
 import {mergeMap, Observable} from 'rxjs'
-import {isEmptyObject} from '../../helpers/object'
-
-export interface IResponse<T> {
-  status: HttpStatus
-  data?: T
-  message?: string | string[]
-}
+import {isEmptyObject} from '../../function/object'
+import {ApiResponse} from '../../type/Response.type'
 
 @Injectable()
-export class ResponseInterceptor<T> implements NestInterceptor<T, IResponse<T>> {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<IResponse<T>> {
+export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<ApiResponse<T>> {
     let status = context.switchToHttp().getResponse().statusCode
     let data = undefined
     let message = undefined

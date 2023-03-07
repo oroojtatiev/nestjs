@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common'
 import {InjectRepository} from '@nestjs/typeorm'
-import {prepareData} from '../../helpers/data'
+import {prepareData} from '../../function/data'
 import {OrderRepository} from './order.repository'
 import {ProductRepository} from '../product/product.repository'
 

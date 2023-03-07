@@ -18,16 +18,16 @@ export class OrderRepository extends Repository<Order> {
     })
   }
 
-  async getOneOrFail(id: number) {
+  async getOneOrFail(id: number): Promise<Order> {
     return this.findOneOrFail({
       where: {id},
     })
   }
 
-  async getOrderWithProducts(id: number) {
+  async getOrderWithProducts(id: number): Promise<Order[]> {
     return this.find({
       relations: {
-        orderItems: {
+        order_items: {
           product: true,
         },
       },

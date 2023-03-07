@@ -8,6 +8,8 @@ import {MailService} from '../../mail/mail.service'
 import {CreateUserDto, UpdateUserDto, createUserSchema, updateUserSchema} from './user.validation'
 import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
+import {UserOmit} from '../../type/EntityOmit.type'
+import {CreateResponse, DeleteResponse} from '../../type/Response.type'
 
 @Controller('users')
 export class UserController {
@@ -20,19 +22,22 @@ export class UserController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getList(@Query('offset') offset: number, @Query('limit') limit: number) {
+  async getList(
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+  ): Promise<UserOmit[]> {
     return this.userService.getList(offset, limit)
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  async getOne(@Param('id') id: number) {
+  async getOne(@Param('id') id: number): Promise<UserOmit> {
     return await this.userService.getOne(id)
   }
 
   @Post('register')
   @UsePipes(new BodyValidatePipe(createUserSchema))
-  async create(@Body() body: CreateUserDto) {
+  async create(@Body() body: CreateUserDto): Promise<CreateResponse<UserOmit>> {
     const isEmailExist = await this.userService.checkEmailExist(body.email)
 
     if (isEmailExist) {
@@ -51,7 +56,7 @@ export class UserController {
   }
 
   @Get('confirm')
-  async verifyEmail(@Query('token') token: string) {
+  async verifyEmail(@Query('token') token: string): Promise<void> {
     const email = await this.authService.decodeConfirmationToken(token)
     await this.userService.confirmEmail(email)
   }
@@ -59,14 +64,14 @@ export class UserController {
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   @UsePipes(new BodyValidatePipe(updateUserSchema))
-  async update(@Param('id') id: number, @Body() data: UpdateUserDto) {
+  async update(@Param('id') id: number, @Body() data: UpdateUserDto): Promise<UserOmit> {
     await this.userRepository.update(id, data)
     return await this.getOne(id)
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async delete(@Param('id') id: number) {
+  async delete(@Param('id') id: number): Promise<DeleteResponse> {
     await this.userRepository.deleteOrFail(id)
     return {
       message: `Product with ID "${id}" has been deleted`,

@@ -7,7 +7,7 @@ const orderItem = Joi.object().keys({
 })
 
 export const createOrderSchema = Joi.object().keys({
-  transactionId: Joi.string().required(),
+  transaction_id: Joi.string().required(),
   paymentType: Joi.string().valid('CREDIT_CARD', 'PAYPAL').required(), // TODO get from to enum
   products: Joi.array().items(orderItem).required(),
 })

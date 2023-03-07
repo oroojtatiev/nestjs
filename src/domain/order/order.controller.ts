@@ -1,7 +1,7 @@
 import {Controller, Post, Body, Get, Query, Param, Delete, Put, UseGuards, UsePipes} from '@nestjs/common'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
 import {OrderRepository} from './order.repository'
-import {prepareData} from '../../helpers/data'
+import {prepareData} from '../../function/data'
 import {OrderService} from './order.service'
 import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {CreateOrderDto, createOrderSchema, UpdateOrderDto} from './order.validation'
@@ -11,6 +11,8 @@ import {Payment} from '../payment/payment.entity'
 import {Order} from './order.entity'
 import {PaymentRepository} from '../payment/payment.repository'
 import {ProductService} from '../product/product.service'
+import {OrderOmit} from '../../type/EntityOmit.type'
+import {CreateResponse} from '../../type/Response.type'
 
 @Controller('orders')
 export class OrderController {
@@ -24,13 +26,16 @@ export class OrderController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getList(@Query('offset') offset: number, @Query('limit') limit: number) {
+  async getList(
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+  ): Promise<OrderOmit[]> {
     return this.orderService.getList(offset, limit)
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getOne(@Param('id') id: number) {
+  async getOne(@Param('id') id: number): Promise<OrderOmit> {
     const result = await this.orderRepository.getOneOrFail(id)
     return prepareData(result)
   }
@@ -38,17 +43,17 @@ export class OrderController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new BodyValidatePipe(createOrderSchema))
-  async create(@User() user: any, @Body() data: CreateOrderDto) {
+  async create(@User() user: any, @Body() data: CreateOrderDto): Promise<CreateResponse<Order[]>> {
     const userEntity = await this.userService.getUserByEmail(user.email)
 
     const paymentEntity = new Payment()
-    paymentEntity.transactionId = data.transactionId
+    paymentEntity.transaction_id = data.transaction_id
     paymentEntity.paymentType = data.paymentType
     const payment = await this.paymentRepository.save(paymentEntity)
 
     const orderEntity = new Order()
     orderEntity.user = userEntity
-    orderEntity.orderItems = await this.productService.getOrderProducts(data.products)
+    orderEntity.order_items = await this.productService.getOrderProducts(data.products)
     orderEntity.payment = payment
 
     await this.orderRepository.save(orderEntity)

@@ -6,7 +6,9 @@ import {
   ProductTypePostDto, productTypePostSchema, ProductTypePutDto, productTypePutSchema,
 } from './productType.validation'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
-import {prepareData} from '../../helpers/data'
+import {prepareData} from '../../function/data'
+import {ProductTypeOmit} from '../../type/EntityOmit.type'
+import {DeleteResponse} from '../../type/Response.type'
 
 @Controller('product/type')
 export class ProductTypeController {
@@ -16,12 +18,15 @@ export class ProductTypeController {
   ) {}
 
   @Get()
-  async getList(@Query('offset') offset: number, @Query('limit') limit: number) {
+  async getList(
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+  ): Promise<ProductTypeOmit[]> {
     return this.productTypeService.getList(offset, limit)
   }
 
   @Get(':id')
-  async getOne(@Param('id') id: number) {
+  async getOne(@Param('id') id: number): Promise<ProductTypeOmit> {
     const result = await this.productTypeRepository.getOneOrFail(id)
     return prepareData(result)
   }
@@ -29,22 +34,25 @@ export class ProductTypeController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new BodyValidatePipe(productTypePostSchema))
-  async create(@Body() data: ProductTypePostDto) {
-    const product = await this.productTypeRepository.save(data)
-    return prepareData(product)
+  async create(@Body() data: ProductTypePostDto) { // TODO need to type
+    const productType = await this.productTypeRepository.save(data)
+    return {
+      data: prepareData(productType),
+      message: 'Product type has been successfully created',
+    }
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   @UsePipes(new BodyValidatePipe(productTypePutSchema))
-  async update(@Param('id') id: number, @Body() data: ProductTypePutDto) {
+  async update(@Param('id') id: number, @Body() data: ProductTypePutDto): Promise<ProductTypeOmit> {
     await this.productTypeRepository.update(id, data)
-    return await this.getOne(id)
+    return this.getOne(id)
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async delete(@Param('id') id: number) {
+  async delete(@Param('id') id: number): Promise<DeleteResponse> {
     await this.productTypeRepository.deleteOrFail(id)
     return {
       message: `Product type with ${id} has been deleted`,

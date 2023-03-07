@@ -1,7 +1,8 @@
 import {Injectable} from '@nestjs/common'
 import {InjectRepository} from '@nestjs/typeorm'
 import {ProductTypeRepository} from './productType.repository'
-import {prepareData} from '../../helpers/data'
+import {prepareData} from '../../function/data'
+import {ProductTypeOmit} from '../../type/EntityOmit.type'
 
 @Injectable()
 export class ProductTypeService {
@@ -9,17 +10,17 @@ export class ProductTypeService {
     @InjectRepository(ProductTypeRepository) private readonly productTypeRepository: ProductTypeRepository,
   ) {}
 
-  async checkIsNotExists(typeId: number): Promise<boolean> {
+  async checkIsNotExists(type_id: number): Promise<boolean> {
     const r = await this.productTypeRepository.findOne({
       where: {
-        id: typeId,
+        id: type_id,
       },
     })
 
     return r === null
   }
 
-  async getList(offset: number, limit: number) {
+  async getList(offset: number, limit: number): Promise<ProductTypeOmit[]> {
     const data = await this.productTypeRepository.getList(offset, limit)
 
     return data.map((el) => prepareData(el))

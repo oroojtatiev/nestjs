@@ -10,7 +10,9 @@ import {JwtAuthGuard} from '../../auth/jwt.guard'
 import {Product} from './product.entity'
 import {ProductTypeRepository} from '../productType/productType.repository'
 import {BrandRepository} from '../brand/brand.repository'
-import {prepareData} from '../../helpers/data'
+import {prepareData} from '../../function/data'
+import {ProductOmit} from '../../type/EntityOmit.type'
+import {CreateResponse, DeleteResponse} from '../../type/Response.type'
 
 @Controller('products')
 export class ProductController {
@@ -24,17 +26,23 @@ export class ProductController {
 
   @Get('admin')
   @UseGuards(JwtAuthGuard)
-  async getList(@Query('offset') offset: number, @Query('limit') limit: number) {
+  async getList(
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+  ): Promise<ProductOmit[]> {
     return this.productService.getList(offset, limit)
   }
 
   @Get()
-  async getListForUser(@Query('offset') offset: number, @Query('limit') limit: number) {
+  async getListForUser(
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+  ): Promise<ProductOmit[]> {
     return this.productService.getListForUser(offset, limit)
   }
 
   @Get(':id')
-  async getOne(@Param('id') id: number) {
+  async getOne(@Param('id') id: number): Promise<ProductOmit> {
     const result = await this.productRepository.getOneOrFail(id)
     return prepareData(result)
   }
@@ -42,12 +50,12 @@ export class ProductController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new BodyValidatePipe(productPostSchema))
-  async create(@Body() data: ProductPostDto) {
-    const isTypeIdNotExist = await this.productTypeService.checkIsNotExists(data.typeId)
+  async create(@Body() data: ProductPostDto): Promise<CreateResponse<ProductOmit>> {
+    const isTypeIdNotExist = await this.productTypeService.checkIsNotExists(data.type_id)
 
-    if (isTypeIdNotExist) throw new HttpException('This typeId is not exist', HttpStatus.BAD_REQUEST)
+    if (isTypeIdNotExist) throw new HttpException('This type_id is not exist', HttpStatus.BAD_REQUEST)
 
-    const productType = await this.productTypeRepository.getOneOrFail(data.typeId)
+    const productType = await this.productTypeRepository.getOneOrFail(data.type_id)
     const brand = await this.brandRepository.getOneOrFail(data.brandId)
 
     const product = new Product()
@@ -59,25 +67,28 @@ export class ProductController {
     product.weight = data.weight
     product.image = data.image
     product.price = data.price
-    product.inStock = data.inStock
-    product.isPublished = data.isPublished
+    product.in_stock = data.in_stock
+    product.is_published = data.is_published
 
     const newProduct = await this.productRepository.save(product)
 
-    return this.productService.getSavedProduct(newProduct)
+    return {
+      data: await this.productService.getSavedProduct(newProduct).then(), // TODO check is ".then()" needed
+      message: 'Product has been successfully created',
+    }
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   @UsePipes(new BodyValidatePipe(productPutSchema))
-  async update(@Param('id') id: number, @Body() data: ProductPutDto) {
+  async update(@Param('id') id: number, @Body() data: ProductPutDto): Promise<ProductOmit> {
     await this.productRepository.update(id, data)
     return await this.getOne(id)
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async delete(@Param('id') id: number) {
+  async delete(@Param('id') id: number): Promise<DeleteResponse> {
     await this.productRepository.deleteOrFail(id)
     return {
       message: `Product with ${id} has been deleted`,

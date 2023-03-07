@@ -11,7 +11,7 @@ export class Product extends BaseEntity {
   id: number
 
   @RelationId((product: Product) => product.type)
-  typeId: number
+  type_id: number
 
   @Column({length: 15})
   serial: string
@@ -32,10 +32,10 @@ export class Product extends BaseEntity {
   price: number
 
   @Column({nullable: true})
-  inStock: boolean
+  in_stock: boolean
 
   @Column({default: false})
-  isPublished: boolean
+  is_published: boolean
 
   @Column({default: 0})
   views: number
@@ -44,13 +44,13 @@ export class Product extends BaseEntity {
   quantity: number
 
   @CreateDateColumn()
-  createdAt: Date
+  created_at: Date
 
   @UpdateDateColumn()
-  updatedAt: Date
+  updated_at: Date
 
   @DeleteDateColumn()
-  deletedAt: Date
+  deleted_at: Date
 
   @ManyToOne(() => ProductType)
   type: ProductType

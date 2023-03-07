@@ -1,10 +1,11 @@
 import {Injectable} from '@nestjs/common'
 import {InjectRepository} from '@nestjs/typeorm'
 import {ProductRepository} from './product.repository'
-import {prepareData} from '../../helpers/data'
+import {prepareData} from '../../function/data'
 import {Product} from './product.entity'
 import {OrderItemDto} from '../order/order.validation'
 import {OrderItem} from '../orderItem/orderItem.entity'
+import {ProductOmit} from '../../type/EntityOmit.type'
 
 @Injectable()
 export class ProductService {
@@ -12,12 +13,12 @@ export class ProductService {
     @InjectRepository(ProductRepository) private readonly productRepository: ProductRepository,
   ) {}
 
-  async getList(offset: number, limit: number) {
+  async getList(offset: number, limit: number): Promise<ProductOmit[]> {
     const data = await this.productRepository.getListForUser(offset, limit)
     return data.map((el) => prepareData(el))
   }
 
-  async getListForUser(offset: number, limit: number) {
+  async getListForUser(offset: number, limit: number): Promise<ProductOmit[]> {
     const data = await this.productRepository.getList(offset, limit)
     return data.map((el) => prepareData(el))
   }
@@ -31,7 +32,7 @@ export class ProductService {
     }))
   }
 
-  async getSavedProduct(product: Product) {
+  async getSavedProduct(product: Product): Promise<ProductOmit> {
     const response = await this.productRepository.getOneWithType(product.id)
     return prepareData(response)
   }

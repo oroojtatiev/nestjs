@@ -14,16 +14,16 @@ export class Payment extends BaseEntity {
   id: number
 
   @Column({length: 25})
-  transactionId: string
+  transaction_id: string
 
   @Column()
   paymentType: PaymentType
 
   @CreateDateColumn()
-  createdAt: Date
+  created_at: Date
 
   @DeleteDateColumn({nullable: true})
-  deletedAt: Date
+  deleted_at: Date
 
   @OneToOne(() => Order, order => order.payment)
   @JoinColumn()

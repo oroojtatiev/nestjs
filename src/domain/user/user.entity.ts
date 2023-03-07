@@ -24,19 +24,19 @@ export class User extends BaseEntity {
   token: string
 
   @Column({nullable: true})
-  tokenExpire: Date
+  token_expire: Date
 
   @Column({default: false})
-  isEmailConfirmed: boolean
+  is_email_confirmed: boolean
 
   @CreateDateColumn()
-  createdAt: Date
+  created_at: Date
 
   @UpdateDateColumn({nullable: true})
-  updatedAt: Date
+  updated_at: Date
 
   @DeleteDateColumn({nullable: true})
-  deletedAt: Date
+  deleted_at: Date
 
   @OneToMany(() => Order, orders => orders.user)
   orders: Order[]
