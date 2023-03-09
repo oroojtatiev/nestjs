@@ -73,7 +73,7 @@ export class ProductController {
     const newProduct = await this.productRepository.save(product)
 
     return {
-      data: await this.productService.getSavedProduct(newProduct).then(), // TODO check is ".then()" needed
+      data: newProduct,
       message: 'Product has been successfully created',
     }
   }

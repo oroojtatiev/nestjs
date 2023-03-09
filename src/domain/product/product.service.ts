@@ -2,7 +2,6 @@ import {Injectable} from '@nestjs/common'
 import {InjectRepository} from '@nestjs/typeorm'
 import {ProductRepository} from './product.repository'
 import {prepareData} from '../../function/data'
-import {Product} from './product.entity'
 import {OrderItemDto} from '../order/order.validation'
 import {OrderItem} from '../orderItem/orderItem.entity'
 import {ProductOmit} from '../../type/EntityOmit.type'
@@ -30,10 +29,5 @@ export class ProductService {
       orderItem.quantity = el.quantity
       return orderItem
     }))
-  }
-
-  async getSavedProduct(product: Product): Promise<ProductOmit> {
-    const response = await this.productRepository.getOneWithType(product.id)
-    return prepareData(response)
   }
 }

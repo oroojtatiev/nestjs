@@ -10,9 +10,6 @@ export class Product extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @RelationId((product: Product) => product.type)
-  type_id: number
-
   @Column({length: 15})
   serial: string
 
