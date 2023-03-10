@@ -13,12 +13,12 @@ export class ProductService {
   ) {}
 
   async getList(offset: number, limit: number): Promise<ProductOmit[]> {
-    const data = await this.productRepository.getListForUser(offset, limit)
+    const data = await this.productRepository.getList(offset, limit)
     return data.map((el) => prepareData(el))
   }
 
-  async getListForUser(offset: number, limit: number): Promise<ProductOmit[]> {
-    const data = await this.productRepository.getList(offset, limit)
+  async getPublishedList(offset: number, limit: number): Promise<ProductOmit[]> {
+    const data = await this.productRepository.getPublishedList(offset, limit)
     return data.map((el) => prepareData(el))
   }
 

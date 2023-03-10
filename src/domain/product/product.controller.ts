@@ -7,6 +7,8 @@ import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {ProductPostDto, productPostSchema, ProductPutDto, productPutSchema} from './product.validation'
 import {ProductTypeService} from '../productType/productType.service'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
+import {RoleGuard} from '../../role/role.guard'
+import {Role} from '../../role/role.enum'
 import {Product} from './product.entity'
 import {ProductTypeRepository} from '../productType/productType.repository'
 import {BrandRepository} from '../brand/brand.repository'
@@ -25,6 +27,7 @@ export class ProductController {
   ) {}
 
   @Get('admin')
+  @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(JwtAuthGuard)
   async getList(
     @Query('offset') offset: number,
@@ -38,7 +41,7 @@ export class ProductController {
     @Query('offset') offset: number,
     @Query('limit') limit: number,
   ): Promise<ProductOmit[]> {
-    return this.productService.getListForUser(offset, limit)
+    return this.productService.getPublishedList(offset, limit)
   }
 
   @Get(':id')
