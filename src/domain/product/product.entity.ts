@@ -1,6 +1,6 @@
 import {
   BaseEntity, Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne,
-  RelationId, JoinColumn,
+  JoinColumn,
 } from 'typeorm'
 import {ProductType} from '../productType/productType.entity'
 import {Brand} from '../brand/brand.entity'

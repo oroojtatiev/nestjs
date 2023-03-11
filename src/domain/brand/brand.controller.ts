@@ -34,7 +34,7 @@ export class BrandController {
   @Post()
   @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   @UsePipes(new BodyValidatePipe(brandSchema))
-  async create(@Body() data: BrandPostDto) { // TODO need to type
+  async create(@Body() data: BrandPostDto) {
     const brand = await this.brandRepository.save(data)
     return {
       data: prepareData(brand),
