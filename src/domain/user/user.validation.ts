@@ -8,7 +8,10 @@ export const createUserSchema = Joi.object({
   password: Joi.string().required(),
 })
 
-export const updateUserSchema = createUserSchema
+export const updateUserSchema = Joi.object({
+  firstname: Joi.string().max(15).required(),
+  lastname: Joi.string().max(15).required(),
+})
 
 export type CreateUserDto = typeof Joi.extractType<typeof createUserSchema>
 export type UpdateUserDto = typeof Joi.extractType<typeof updateUserSchema>
