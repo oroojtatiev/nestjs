@@ -5,7 +5,10 @@ import {UserRepository} from './user.repository'
 import {UserService} from './user.service'
 import {AuthService} from '../../auth/auth.service'
 import {MailService} from '../../mail/mail.service'
-import {CreateUserDto, UpdateUserDto, createUserSchema, updateUserSchema} from './user.validation'
+import {
+  CreateUserDto, createUserSchema, UpdateUserByUserDto, updateUserByUserSchema, UpdateUserByAdminDto,
+  updateUserByAdminSchema,
+} from './user.validation'
 import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
 import {UserOmit} from '../../type/EntityOmit.type'
@@ -65,8 +68,16 @@ export class UserController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  @UsePipes(new BodyValidatePipe(updateUserSchema))
-  async update(@Param('id') id: number, @Body() data: UpdateUserDto): Promise<UserOmit> {
+  @UsePipes(new BodyValidatePipe(updateUserByUserSchema))
+  async updateByUser(@Param('id') id: number, @Body() data: UpdateUserByUserDto): Promise<UserOmit> {
+    await this.userRepository.update(id, data)
+    return await this.getOne(id)
+  }
+
+  @Put('admin/:id')
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
+  @UsePipes(new BodyValidatePipe(updateUserByAdminSchema))
+  async updateByAdmin(@Param('id') id: number, @Body() data: UpdateUserByAdminDto): Promise<UserOmit> {
     await this.userRepository.update(id, data)
     return await this.getOne(id)
   }
