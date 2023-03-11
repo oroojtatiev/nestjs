@@ -13,6 +13,9 @@ import {PaymentRepository} from '../payment/payment.repository'
 import {ProductService} from '../product/product.service'
 import {OrderOmit} from '../../type/EntityOmit.type'
 import {CreateResponse} from '../../type/Response.type'
+import {Role} from '../../role/roles.enum'
+import {TokenBaseData} from '../../auth/auth.service'
+import {RoleGuard} from '../../role/role.guard'
 
 @Controller('orders')
 export class OrderController {
@@ -24,8 +27,8 @@ export class OrderController {
     private readonly userService: UserService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get()
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   async getList(
     @Query('offset') offset: number,
     @Query('limit') limit: number,
@@ -33,8 +36,8 @@ export class OrderController {
     return this.orderService.getList(offset, limit)
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   async getOne(@Param('id') id: number): Promise<OrderOmit> {
     const result = await this.orderRepository.getOneOrFail(id)
     return prepareData(result)
@@ -43,8 +46,8 @@ export class OrderController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new BodyValidatePipe(createOrderSchema))
-  async create(@User() user: any, @Body() data: CreateOrderDto): Promise<CreateResponse<Order[]>> {
-    const userEntity = await this.userService.getUserByEmail(user.email)
+  async create(@User() user: TokenBaseData, @Body() data: CreateOrderDto): Promise<CreateResponse<Order[]>> {
+    const userEntity = await this.userService.getUserByEmail(user.username)
 
     const paymentEntity = new Payment()
     paymentEntity.transaction_id = data.transaction_id
@@ -65,10 +68,10 @@ export class OrderController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   async update(@Param('id') id: number, @Body() data: UpdateOrderDto) {}
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   async delete(@Param('id') id: number) {}
 }

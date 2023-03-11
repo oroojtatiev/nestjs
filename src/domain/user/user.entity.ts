@@ -2,7 +2,7 @@ import {
   BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn,
 } from 'typeorm'
 import {Order} from '../order/order.entity'
-import {Role} from '../../role/role.enum'
+import {Role} from '../../role/roles.enum'
 
 @Entity()
 export class User extends BaseEntity {
@@ -31,11 +31,12 @@ export class User extends BaseEntity {
   is_email_confirmed: boolean
 
   @Column({
+    array: true,
     type: 'enum',
     enum: Role,
-    default: Role.User,
+    default: [Role.User],
   })
-  public role: Role
+  roles: Role[]
 
   @CreateDateColumn()
   created_at: Date

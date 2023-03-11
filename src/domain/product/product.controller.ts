@@ -7,14 +7,16 @@ import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {ProductPostDto, productPostSchema, ProductPutDto, productPutSchema} from './product.validation'
 import {ProductTypeService} from '../productType/productType.service'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
-import {RoleGuard} from '../../role/role.guard'
-import {Role} from '../../role/role.enum'
+import {Role} from '../../role/roles.enum'
 import {Product} from './product.entity'
 import {ProductTypeRepository} from '../productType/productType.repository'
 import {BrandRepository} from '../brand/brand.repository'
 import {prepareData} from '../../function/data'
 import {ProductOmit} from '../../type/EntityOmit.type'
 import {CreateResponse, DeleteResponse} from '../../type/Response.type'
+import {User} from '../../infrastructure/decorators/user.decorator'
+import {TokenBaseData} from '../../auth/auth.service'
+import {RoleGuard} from '../../role/role.guard'
 
 @Controller('products')
 export class ProductController {
@@ -27,8 +29,7 @@ export class ProductController {
   ) {}
 
   @Get('admin')
-  @UseGuards(RoleGuard(Role.Admin))
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   async getList(
     @Query('offset') offset: number,
     @Query('limit') limit: number,
@@ -51,9 +52,9 @@ export class ProductController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   @UsePipes(new BodyValidatePipe(productPostSchema))
-  async create(@Body() data: ProductPostDto): Promise<CreateResponse<ProductOmit>> {
+  async create(@User() user: TokenBaseData, @Body() data: ProductPostDto): Promise<CreateResponse<ProductOmit>> {
     const isTypeIdNotExist = await this.productTypeService.checkIsNotExists(data.type_id)
 
     if (isTypeIdNotExist) throw new HttpException('This type_id is not exist', HttpStatus.BAD_REQUEST)
@@ -82,7 +83,7 @@ export class ProductController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   @UsePipes(new BodyValidatePipe(productPutSchema))
   async update(@Param('id') id: number, @Body() data: ProductPutDto): Promise<ProductOmit> {
     await this.productRepository.update(id, data)
@@ -90,7 +91,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   async delete(@Param('id') id: number): Promise<DeleteResponse> {
     await this.productRepository.deleteOrFail(id)
     return {

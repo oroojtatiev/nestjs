@@ -7,6 +7,8 @@ import {JwtAuthGuard} from '../../auth/jwt.guard'
 import {prepareData} from '../../function/data'
 import {BrandOmit} from '../../type/EntityOmit.type'
 import {DeleteResponse} from '../../type/Response.type'
+import {Role} from '../../role/roles.enum'
+import {RoleGuard} from '../../role/role.guard'
 
 @Controller('brand')
 export class BrandController {
@@ -30,7 +32,7 @@ export class BrandController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   @UsePipes(new BodyValidatePipe(brandSchema))
   async create(@Body() data: BrandPostDto) { // TODO need to type
     const brand = await this.brandRepository.save(data)
@@ -41,7 +43,7 @@ export class BrandController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   @UsePipes(new BodyValidatePipe(brandPutSchema))
   async update(@Param('id') id: number, @Body() data: BrandPutDto): Promise<BrandOmit> {
     await this.brandRepository.update(id, data)
@@ -49,7 +51,7 @@ export class BrandController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   async delete(@Param('id') id: number): Promise<DeleteResponse> {
     await this.brandRepository.deleteOrFail(id)
     return {

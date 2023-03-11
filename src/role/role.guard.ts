@@ -1,6 +1,7 @@
-import {CanActivate, ExecutionContext, Type, mixin} from '@nestjs/common'
+import {CanActivate, ExecutionContext, Type} from '@nestjs/common'
 import {Reflector} from '@nestjs/core'
-import {Role} from './role.enum'
+import {Role} from './roles.enum'
+import {ROLES_KEY} from './role.constant'
 import {RequestWithUser} from '../auth/auth.interface'
 
 export const RoleGuard = (role: Role): Type<CanActivate> => {
@@ -8,9 +9,8 @@ export const RoleGuard = (role: Role): Type<CanActivate> => {
     constructor(private reflector: Reflector) {}
 
     canActivate(context: ExecutionContext): boolean {
-      const request = context.switchToHttp().getRequest<RequestWithUser>()
-      const user = request.user
-      return user?.role === role
+      const {user} = context.switchToHttp().getRequest<RequestWithUser>()
+      return user?.[ROLES_KEY].includes(role)
     }
   }
 }

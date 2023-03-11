@@ -3,9 +3,17 @@ import {ConfigService} from '@nestjs/config'
 import {JwtService} from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import {User} from '../domain/user/user.entity'
+import {Role} from '../role/roles.enum'
+import {ROLES_KEY} from '../role/role.constant'
 
-interface IVerificationTokenPayload {
+interface VerificationTokenPayload {
   email: string
+}
+
+export interface TokenBaseData {
+  userId: number
+  username: string
+  roles: Role[]
 }
 
 @Injectable()
@@ -16,7 +24,7 @@ export class AuthService {
   ) {}
 
   async generateToken(email: string) {
-    const payload: IVerificationTokenPayload = {email}
+    const payload: VerificationTokenPayload = {email}
 
     return this.jwtService.sign(payload, {
       secret: this.configService.get('AUTH_JWT_SECRET'),
@@ -48,10 +56,10 @@ export class AuthService {
   }
 
   async authorize(user: User): Promise<string> {
-    const payload = {
-      username: user.email,
+    const payload: TokenBaseData = {
       userId: user.id,
-      role: user.role,
+      username: user.email,
+      [ROLES_KEY]: user.roles,
     }
     return this.jwtService.sign(payload)
   }

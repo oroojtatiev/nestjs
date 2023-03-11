@@ -9,6 +9,8 @@ import {JwtAuthGuard} from '../../auth/jwt.guard'
 import {prepareData} from '../../function/data'
 import {ProductTypeOmit} from '../../type/EntityOmit.type'
 import {DeleteResponse} from '../../type/Response.type'
+import {Role} from '../../role/roles.enum'
+import {RoleGuard} from '../../role/role.guard'
 
 @Controller('product/type')
 export class ProductTypeController {
@@ -32,7 +34,7 @@ export class ProductTypeController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   @UsePipes(new BodyValidatePipe(productTypePostSchema))
   async create(@Body() data: ProductTypePostDto) { // TODO need to type
     const productType = await this.productTypeRepository.save(data)
@@ -43,7 +45,7 @@ export class ProductTypeController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   @UsePipes(new BodyValidatePipe(productTypePutSchema))
   async update(@Param('id') id: number, @Body() data: ProductTypePutDto): Promise<ProductTypeOmit> {
     await this.productTypeRepository.update(id, data)
@@ -51,7 +53,7 @@ export class ProductTypeController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   async delete(@Param('id') id: number): Promise<DeleteResponse> {
     await this.productTypeRepository.deleteOrFail(id)
     return {

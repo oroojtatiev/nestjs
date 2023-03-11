@@ -10,6 +10,8 @@ import {BodyValidatePipe} from '../../infrastructure/pipes/validation.pipe'
 import {JwtAuthGuard} from '../../auth/jwt.guard'
 import {UserOmit} from '../../type/EntityOmit.type'
 import {CreateResponse, DeleteResponse} from '../../type/Response.type'
+import {Role} from '../../role/roles.enum'
+import {RoleGuard} from '../../role/role.guard'
 
 @Controller('users')
 export class UserController {
@@ -21,7 +23,7 @@ export class UserController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   async getList(
     @Query('offset') offset: number,
     @Query('limit') limit: number,
@@ -70,7 +72,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
   async delete(@Param('id') id: number): Promise<DeleteResponse> {
     await this.userRepository.deleteOrFail(id)
     return {

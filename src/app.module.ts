@@ -1,3 +1,4 @@
+import {APP_GUARD} from '@nestjs/core'
 import {Module} from '@nestjs/common'
 import {AppConfigModule} from './config/config.module'
 import {AppController} from './app.controller'
@@ -23,7 +24,11 @@ import {OrderModule} from './domain/order/order.module'
     ProductTypeModule,
     OrderModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [
+    AppController,
+  ],
+  providers: [
+    AppService,
+  ],
 })
 export class AppModule {}
