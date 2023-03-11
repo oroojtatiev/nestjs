@@ -3,7 +3,7 @@ import {Response} from 'express'
 import {EntityNotFoundError} from 'typeorm'
 import {ConfigService} from '@nestjs/config'
 
-interface IExceptionResponse {
+interface ExceptionResponse {
   statusCode: number
   message: string[]
   error: string
@@ -20,14 +20,14 @@ export class AppExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>()
 
     if (exception instanceof NotFoundException) {
-      const {statusCode, error} = exception.getResponse() as IExceptionResponse
+      const {statusCode, error} = exception.getResponse() as ExceptionResponse
       return response
         .status(statusCode)
         .json({status: statusCode, message: error})
     }
 
     if (exception instanceof HttpException) {
-      const exceptionResponse = exception.getResponse() as IExceptionResponse
+      const exceptionResponse = exception.getResponse() as ExceptionResponse
       const status = exception.getStatus()
       const message = typeof exceptionResponse === 'string' ? exceptionResponse : exceptionResponse.message
 
