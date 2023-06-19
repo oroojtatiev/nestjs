@@ -1,34 +1,76 @@
 version: '3.8'
 
 services:
-  nestjs:
-    container_name: nestjs-app
-    image: oruj91/nestjs
+  postgres:
+    container_name: nestjs-postgres
+    image: postgres
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - vol_postgres:/var/lib/postgresql/data
+    restart: always
+  rabbitmq:
+    container_name: nestjs-rabbitmq
+    image: rabbitmq
+    ports:
+      - '5672:5672'
+  auth:
+    container_name: nestjs-auth-prod
     build:
       context: .
+      dockerfile: ./apps/auth/Dockerfile
       target: production
-      dockerfile: ./Dockerfile
-    environment:
-      - APP_PORT=${APP_PORT}
-      - DB_HOST=postgres
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - TYPEORM_SYNC=${TYPEORM_SYNC}
-      - TYPEORM_MIGRATIONS_DIR=${TYPEORM_MIGRATIONS_DIR}
-      - TYPEORM_MIGRATIONS=${TYPEORM_MIGRATIONS}
-      - AUTH_JWT_SECRET=${AUTH_JWT_SECRET}
-      - AUTH_JWT_TOKEN_EXPIRE_SECONDS=${AUTH_JWT_TOKEN_EXPIRE_SECONDS}
-      - AUTH_CONFIRM_URL=${AUTH_CONFIRM_URL}
-      - AWS_SMTP_ENDPOINT=${AWS_SMTP_ENDPOINT}
-      - AWS_SMTP_USERNAME=${AWS_SMTP_USERNAME}
-      - AWS_SMTP_PASSWORD=${AWS_SMTP_PASSWORD}
-      - AWS_SMTP_EMAIL=${AWS_SMTP_EMAIL}
-    command: pnpm start:prod
+    command: pnpm auth:prod
     ports:
-      - ${APP_PORT}:${APP_PORT}
+      - ${APP_PORT_AUTH}:${APP_PORT_AUTH}
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - rabbitmq
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    restart: unless-stopped
+  mail:
+    container_name: nestjs-mail-prod
+    build:
+      context: .
+      dockerfile: ./apps/mail/Dockerfile
+      target: production
+    command: pnpm mail:prod
+    ports:
+      - ${APP_PORT_MAIL}:${APP_PORT_MAIL}
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - rabbitmq
+      - auth
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+  shop:
+    container_name: nestjs-shop-prod
+    build:
+      context: .
+      dockerfile: ./apps/shop/Dockerfile
+      target: production
+    command: pnpm shop:prod
+    ports:
+      - ${APP_PORT_SHOP}:${APP_PORT_SHOP}
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - rabbitmq
+      - auth
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+volumes:
+  vol_postgres:
+    driver: local

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    container_name: postgres-db
+    container_name: nestjs-postgres
     image: postgres
     environment:
       - POSTGRES_DB=${DB_NAME}
@@ -13,5 +13,64 @@ services:
     volumes:
       - vol_postgres:/var/lib/postgresql/data
     restart: always
+  rabbitmq:
+    container_name: nestjs-rabbitmq
+    image: rabbitmq
+    ports:
+      - '5672:5672'
+  auth:
+    container_name: nestjs-auth
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+      target: development
+    command: pnpm auth:dev
+    ports:
+      - ${APP_PORT_AUTH}:${APP_PORT_AUTH}
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+  mail:
+    container_name: nestjs-mail
+    build:
+      context: .
+      dockerfile: ./apps/mail/Dockerfile
+      target: development
+    command: pnpm mail:dev
+    ports:
+      - ${APP_PORT_MAIL}:${APP_PORT_MAIL}
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - rabbitmq
+      - auth
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+  shop:
+    container_name: nestjs-shop
+    build:
+      context: .
+      dockerfile: ./apps/shop/Dockerfile
+      target: development
+    command: pnpm shop:dev
+    ports:
+      - ${APP_PORT_SHOP}:${APP_PORT_SHOP}
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - rabbitmq
+      - auth
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
 volumes:
   vol_postgres:
+    driver: local

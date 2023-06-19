@@ -1,8 +1,51 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
   "compilerOptions": {
-    "assets": ["**/*.hbs"]
-  }
+    "assets": [
+      "**/*.hbs"
+    ],
+    "tsConfigPath": "tsconfig.app.json",
+    "webpack": true
+  },
+  "monorepo": true,
+  "projects": {
+    "auth": {
+      "compilerOptions": {
+        "tsConfigPath": "apps/auth/tsconfig.app.json"
+      },
+      "entryFile": "main",
+      "root": "apps/auth",
+      "sourceRoot": "apps/auth/src",
+      "type": "application"
+    },
+    "common": {
+      "compilerOptions": {
+        "tsConfigPath": "libs/common/tsconfig.lib.json"
+      },
+      "entryFile": "index",
+      "root": "libs/common",
+      "sourceRoot": "libs/common/src",
+      "type": "library"
+    },
+    "shop": {
+      "compilerOptions": {
+        "tsConfigPath": "apps/shop/tsconfig.app.json"
+      },
+      "entryFile": "main",
+      "root": "apps/shop",
+      "sourceRoot": "apps/shop/src",
+      "type": "application"
+    },
+    "mail": {
+      "type": "application",
+      "root": "apps/mail",
+      "entryFile": "main",
+      "sourceRoot": "apps/mail/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/mail/tsconfig.app.json"
+      }
+    }
+  },
+  "root": "apps/nestjs"
 }
