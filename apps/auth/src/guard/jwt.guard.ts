@@ -30,7 +30,7 @@ export class AuthJwtGuard extends AuthGuard('jwt') {
     }
 
     await this.verifyToken(request, token)
-    await this.verifyUser(request.user.sub)
+    await this.checkRefreshToken(request.user.sub)
 
     return true
   }
@@ -45,7 +45,7 @@ export class AuthJwtGuard extends AuthGuard('jwt') {
     }
   }
 
-  private async verifyUser(userId): Promise<unknown> {
+  private async checkRefreshToken(userId): Promise<unknown> {
     return lastValueFrom(
       this.shopClient
         .send('getUserById', {id: userId})
