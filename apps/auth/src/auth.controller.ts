@@ -77,7 +77,7 @@ export class AuthController {
       .pipe(
         mergeMap(async (user: User) => {
           await this.authService.validateRefreshToken(req.user, user)
-          const {accessToken, refreshToken} = await this.authService.getTokens(user)
+          const {accessToken, refreshToken} = await this.authService.getNewTokens(user)
           return {accessToken, refreshToken}
         }),
         mergeMap(({accessToken, refreshToken}: Tokens) => {

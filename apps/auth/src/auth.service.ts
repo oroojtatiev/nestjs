@@ -38,7 +38,7 @@ export class AuthService {
   }
 
   async login(user: User, response: Response): Promise<Tokens> {
-    const {accessToken, refreshToken} = await this.getTokens(user)
+    const {accessToken, refreshToken} = await this.getNewTokens(user)
 
     const tokenExpire = this.configService.get('JWT_ACCESS_EXPIRE')
 
@@ -61,7 +61,7 @@ export class AuthService {
     }
   }
 
-  async getTokens(user: User): Promise<Tokens> {
+  async getNewTokens(user: User): Promise<Tokens> {
     const payload: IUserToken = {
       sub: user.id,
       username: user.email,
@@ -87,13 +87,15 @@ export class AuthService {
   }
 
   async validateRefreshToken(userToken: Pick<IUserToken, 'refreshToken'>, user: User): Promise<void> {
-    if (!userToken || !userToken.refreshToken) {
+    const hashedRefreshTokenFromDb = user.refresh_token
+    
+    if (!userToken.refreshToken || !hashedRefreshTokenFromDb) {
       throw new UnauthorizedException()
     }
 
-    const refreshTokenMatches = bcrypt.compare(
-      user.refresh_token,
+    const refreshTokenMatches = await bcrypt.compare(
       userToken.refreshToken,
+      hashedRefreshTokenFromDb,
     )
 
     if (!refreshTokenMatches) {
