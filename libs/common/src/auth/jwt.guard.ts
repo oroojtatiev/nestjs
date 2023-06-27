@@ -1,9 +1,11 @@
 import {CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException} from '@nestjs/common'
 import {ClientProxy} from '@nestjs/microservices'
 import {catchError, map, Observable} from 'rxjs'
-import {AUTH_SERVICE} from '@libs/common/constant/microservice'
-import {IUserToken} from '@libs/common/types/auth.type'
-import {cookieAuthenticationKey} from '@libs/common/auth/constant'
+import {Request} from 'express'
+import {AUTH_SERVICE, messagePattern} from '@libs/common/constant/microservice'
+import {AccessTokenData} from '@libs/common/types/auth.type'
+import {authenticationHeader} from '@libs/common/auth/constant'
+import {error} from '@libs/common/constant/message'
 
 @Injectable()
 export class JwtGuard implements CanActivate {
@@ -13,12 +15,12 @@ export class JwtGuard implements CanActivate {
     const token = this.getToken(context)
 
     return this.authClient
-      .send('validateUser', {
-        [cookieAuthenticationKey]: token,
+      .send(messagePattern.auth.verifyAccessToken, {
+        [authenticationHeader]: token,
       })
       .pipe(
-        map((user: IUserToken) => {
-          this.addUser(user, context)
+        map((user: AccessTokenData) => {
+          this.addTokenData(user, context)
           return true
         }),
         catchError(() => {
@@ -31,25 +33,33 @@ export class JwtGuard implements CanActivate {
     let token: string
 
     if (context.getType() === 'rpc') {
-      token = context.switchToRpc().getData()[cookieAuthenticationKey]
+      //TODO get token. Can be accessToken and refreshToken
+      // token = context.switchToRpc().getData()[authenticationHeader]
     }
     else if (context.getType() === 'http') {
-      token = context.switchToHttp().getRequest().cookies?.[cookieAuthenticationKey]
+      const request = context.switchToHttp().getRequest()
+      token = this.extractTokenFromHeader(request)
     }
 
     if (!token) {
-      throw new UnauthorizedException(`${cookieAuthenticationKey} cookie not found`)
+      throw new UnauthorizedException(error.authenticationHeaderNotPassed)
     }
 
     return token
   }
 
-  private addUser(user: IUserToken, context: ExecutionContext) {
+  private extractTokenFromHeader(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? []
+    return type === 'Bearer' ? token : undefined
+  }
+
+  private addTokenData(data: AccessTokenData, context: ExecutionContext) {
+    //TODO check for useless
     if (context.getType() === 'rpc') {
-      context.switchToRpc().getData().user = user
+      context.switchToRpc().getData().user = data
     }
     else if (context.getType() === 'http') {
-      context.switchToHttp().getRequest().user = user
+      context.switchToHttp().getRequest().user = data
     }
   }
 }

@@ -8,7 +8,7 @@ import {BodyValidatePipe} from '@libs/common/helper/pipe/validation.pipe'
 import {UserToken} from '@libs/common/helper/decorator/user.decorator'
 import {Payment} from '@libs/common/entity/payment.entity'
 import {Order} from '@libs/common/entity/order.entity'
-import {IUserToken} from '@libs/common/types/auth.type'
+import {AccessTokenData} from '@libs/common/types/auth.type'
 import {OrderRepository} from './order.repository'
 import {OrderService} from './order.service'
 import {CreateOrderDto, createOrderSchema, UpdateOrderDto} from './order.validation'
@@ -47,7 +47,10 @@ export class OrderController {
   @Post()
   @UseGuards(JwtGuard)
   @UsePipes(new BodyValidatePipe(createOrderSchema))
-  async create(@UserToken() user: IUserToken, @Body() data: CreateOrderDto): Promise<CreateResponse<Order[]>> {
+  async create(
+    @UserToken() user: AccessTokenData,
+    @Body() data: CreateOrderDto,
+  ): Promise<CreateResponse<Order[]>> {
     const userEntity = await this.userRepository.getUserByEmail(user.username)
 
     const paymentEntity = new Payment()

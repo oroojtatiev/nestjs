@@ -1,12 +1,17 @@
-import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common'
+import {BadRequestException, Injectable} from '@nestjs/common'
 import {ConfigService} from '@nestjs/config'
 import {JwtService} from '@nestjs/jwt'
-import * as bcrypt from 'bcrypt'
+import {JwtSignOptions} from '@nestjs/jwt/dist/interfaces'
 import {Response} from 'express'
+import {uid} from 'uid'
+import {AccessTokenData, RefreshTokenData} from '@libs/common'
 import {User} from '@libs/common/entity/user.entity'
 import {ROLES_KEY} from '@libs/common/role'
-import {IUserToken, Tokens, VerifyEmailToken} from '@libs/common/types/auth.type'
-import {cookieAuthenticationKey} from '@libs/common/auth/constant'
+import {tokenIdLength} from '@libs/common/config'
+import {cookie} from '@libs/common/auth/constant'
+import {AccessTokenPayload, RefreshTokenPayload, Tokens, VerifyEmailToken} from '@libs/common/types/auth.type'
+import {compareHash} from '@libs/common/helper/function/bcrypt'
+import {getCurrentUnixInSeconds} from '@libs/common/helper/function/date'
 
 @Injectable()
 export class AuthService {
@@ -15,14 +20,15 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  generateEmailToken(email: string): string {
-    return this.jwtService.sign({email}, {
+  async generateEmailToken(email: string): Promise<string> {
+    const options = {
       secret: this.configService.get('JWT_ACCESS_SECRET'),
       expiresIn: this.configService.get('JWT_ACCESS_EXPIRE'),
-    })
+    }
+    return await this.jwtService.signAsync({email}, options)
   }
 
-  // TODO remove Exception type from function return
+  //TODO remove Exception type from function return
   async verifyEmailToken(token: string): Promise<VerifyEmailToken> {
     try {
       return await this.jwtService.verify(token, {
@@ -34,79 +40,84 @@ export class AuthService {
   }
 
   async validatePassword(password: string, user: User): Promise<boolean> {
-    return bcrypt.compare(password, user.password)
+    return compareHash(password, user.password)
   }
 
-  async login(user: User, response: Response): Promise<Tokens> {
-    const {accessToken, refreshToken} = await this.getNewTokens(user)
+  async getNewAccessToken(user: User, tokenId?: string): Promise<string> {
+    if (!tokenId) tokenId = uid(tokenIdLength)
 
-    const tokenExpire = this.configService.get('JWT_ACCESS_EXPIRE')
-
-    if (!tokenExpire.includes('s')) {
-      throw new Error('JWT_ACCESS_EXPIRE must be in seconds. Example: 3600s')
-    }
-
-    const expireSeconds = tokenExpire.replace('s', '')
-
-    response.cookie(cookieAuthenticationKey, accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      expires: new Date(Date.now() + expireSeconds * 1000),
-    })
-
-    return {
-      accessToken,
-      refreshToken,
-    }
-  }
-
-  async getNewTokens(user: User): Promise<Tokens> {
-    const payload: IUserToken = {
-      sub: user.id,
+    const tokenPayload: AccessTokenPayload = {
+      tokenId,
+      userId: user.id,
       username: user.email,
       [ROLES_KEY]: user.roles,
     }
-    const accessTokenOptions = {
+
+    const tokenOptions: JwtSignOptions = {
       secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
       expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRE'),
     }
-    const refreshTokenOptions = {
+
+    return await this.jwtService.signAsync(tokenPayload, tokenOptions)
+  }
+
+  async getNewRefreshToken(user: User, tokenId: string): Promise<string> {
+    const tokenPayload: RefreshTokenPayload = {
+      tokenId,
+      userId: user.id,
+    }
+
+    const tokenOptions = {
       secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRE'),
     }
 
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(payload, accessTokenOptions),
-      this.jwtService.signAsync(payload, refreshTokenOptions),
+    return await this.jwtService.signAsync(tokenPayload, tokenOptions)
+  }
+
+  async getNewTokenPair(user: User): Promise<Tokens> {
+    const tokenId = uid(tokenIdLength)
+
+    const [refreshToken, accessToken] = await Promise.all([
+      this.getNewRefreshToken(user, tokenId),
+      this.getNewAccessToken(user, tokenId),
     ])
+
     return {
       accessToken,
       refreshToken,
     }
   }
 
-  async validateRefreshToken(userToken: Pick<IUserToken, 'refreshToken'>, user: User): Promise<void> {
-    const hashedRefreshTokenFromDb = user.refresh_token
-    
-    if (!userToken.refreshToken || !hashedRefreshTokenFromDb) {
-      throw new UnauthorizedException()
+  async login(user: User, response: Response): Promise<Tokens> {
+    const {accessToken, refreshToken} = await this.getNewTokenPair(user)
+
+    let refreshTokenExpire = this.configService.get('JWT_REFRESH_EXPIRE')
+
+    if (!refreshTokenExpire.includes('s')) {
+      throw new Error('JWT_REFRESH_EXPIRE must be in seconds. Example: 3600s')
     }
 
-    const refreshTokenMatches = await bcrypt.compare(
-      userToken.refreshToken,
-      hashedRefreshTokenFromDb,
-    )
+    const refreshTokenExpireSeconds = refreshTokenExpire.replace('s', '')
 
-    if (!refreshTokenMatches) {
-      throw new UnauthorizedException()
+    refreshTokenExpire = new Date(Date.now() + refreshTokenExpireSeconds * 1000)
+
+    response.cookie(cookie.refreshToken, refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      expires: refreshTokenExpire,
+    })
+
+    return {
+      accessToken,
+      refreshToken,
     }
   }
 
-  logout(response: Response): void {
-    response.cookie(cookieAuthenticationKey, '', {
-      httpOnly: true,
-      expires: new Date(),
-    })
+  async isTokenExpired(token: string): Promise<boolean> {
+    const {exp} = this.jwtService.decode(token) as AccessTokenData | RefreshTokenData
+    const currentTime = getCurrentUnixInSeconds()
+    return exp < currentTime
   }
 }

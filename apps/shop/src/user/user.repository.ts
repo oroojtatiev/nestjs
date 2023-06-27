@@ -43,10 +43,4 @@ export class UserRepository extends Repository<User> {
       is_email_verified: true,
     })
   }
-
-  async updateRefreshToken(userId: number, refreshToken: string | null): Promise<UpdateResult> {
-    return this.update(userId, {
-      refresh_token: refreshToken,
-    })
-  }
 }

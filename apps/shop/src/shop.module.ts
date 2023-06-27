@@ -21,6 +21,7 @@ import {UserModule} from './user/user.module'
         DB_USER: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
+        TYPEORM_DB_SYNC: Joi.string().valid('true', 'false').required(),
         RABBITMQ_URI: Joi.string().required(),
         RABBITMQ_QUEUE_SHOP: Joi.string().required(),
       }),

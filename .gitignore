@@ -11,8 +11,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# OS
+# Stores
 .DS_Store
+.pnpm-store
 
 # Tests
 /coverage

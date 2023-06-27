@@ -1,9 +1,8 @@
 import {Injectable} from '@nestjs/common'
 import {InjectRepository} from '@nestjs/typeorm'
-import * as bcrypt from 'bcrypt'
 import {UserOmit} from '@libs/common/types/entityOmit.type'
 import {User} from '@libs/common'
-import {saltRounds} from '@libs/common/config'
+import {getHash} from '@libs/common/helper/function/bcrypt'
 import {UserRepository} from './user.repository'
 import {CreateUserDto} from './user.validation'
 
@@ -32,7 +31,7 @@ export class UserService {
   }
 
   async save(dto: CreateUserDto): Promise<User> {
-    const passwordHash = await bcrypt.hash(dto.password, saltRounds)
+    const passwordHash = await getHash(dto.password)
 
     return await this.userRepository.save({
       ...dto,
@@ -41,21 +40,9 @@ export class UserService {
     })
   }
 
-  // TODO use UserOmit instead of "any"
+  //TODO use UserOmit type for user argument
   prepareUser(user: any): UserOmit {
     const {updated_at, password, refresh_token, ...data} = user
     return {...data}
-  }
-
-  async updateRefreshToken(userId: number, refreshToken: string | null): Promise<string | null> {
-    if (refreshToken) {
-      const hashedRefreshToken = await bcrypt.hash(refreshToken, saltRounds)
-      await this.userRepository.updateRefreshToken(userId, hashedRefreshToken)
-    }
-    else {
-      await this.userRepository.updateRefreshToken(userId, null)
-    }
-
-    return refreshToken
   }
 }

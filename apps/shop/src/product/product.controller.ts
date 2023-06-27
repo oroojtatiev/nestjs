@@ -5,11 +5,9 @@ import {JwtGuard} from '@libs/common'
 import {BodyValidatePipe} from '@libs/common/helper/pipe/validation.pipe'
 import {Product} from '@libs/common/entity/product.entity'
 import {prepareData} from '@libs/common/helper/function/data'
-import {UserToken} from '@libs/common/helper/decorator/user.decorator'
 import {Role, RoleGuard} from '@libs/common/role'
 import {CreateResponse, MessageResponse} from '@libs/common/types/response.type'
 import {ProductOmit} from '@libs/common/types/entityOmit.type'
-import {IUserToken} from '@libs/common/types/auth.type'
 import {ProductRepository} from './product.repository'
 import {ProductService} from './product.service'
 import {ProductTypeService} from '../productType/productType.service'
@@ -53,7 +51,7 @@ export class ProductController {
   @Post()
   @UseGuards(JwtGuard, RoleGuard(Role.Admin))
   @UsePipes(new BodyValidatePipe(productPostSchema))
-  async create(@UserToken() user: IUserToken, @Body() data: ProductPostDto): Promise<CreateResponse<ProductOmit>> {
+  async create(@Body() data: ProductPostDto): Promise<CreateResponse<ProductOmit>> {
     const isTypeIdNotExist = await this.productTypeService.checkIsNotExists(data.type_id)
 
     if (isTypeIdNotExist) throw new HttpException('This type_id is not exist', HttpStatus.BAD_REQUEST)

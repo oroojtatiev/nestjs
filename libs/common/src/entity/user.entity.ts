@@ -21,9 +21,6 @@ export class User extends BaseEntity {
   @Column({length: 60})
   password: string
 
-  @Column({length: 255, nullable: true})
-  refresh_token: string
-
   @Column({default: false})
   is_email_verified: boolean
 

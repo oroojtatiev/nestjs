@@ -9,9 +9,9 @@ import {BodyValidatePipe} from '@libs/common/helper'
 import {Role, RoleGuard} from '@libs/common/role'
 import {GetUserByEmail} from '@libs/common/types/user.type'
 import {UserOmit} from '@libs/common/types/entityOmit.type'
-import {AUTH_SERVICE, MAIL_SERVICE} from '@libs/common/constant/microservice'
+import {AUTH_SERVICE, MAIL_SERVICE, messagePattern} from '@libs/common/constant/microservice'
 import {CreateResponse, MessageResponse} from '@libs/common/types/response.type'
-import {IVerifyTokenResponse, UpdateRefreshToken} from '@libs/common/types/auth.type'
+import {IVerifyTokenResponse} from '@libs/common/types/auth.type'
 import {UserToken} from '@libs/common/helper/decorator/user.decorator'
 import {
   CreateUserDto, createUserSchema, UpdateUserByUserDto, updateUserByUserSchema, UpdateUserByAdminDto,
@@ -41,11 +41,11 @@ export class UserController {
     const user: User = await this.userService.save(body)
 
     return this.authClient
-      .send('generateEmailToken', {email: body.email})
+      .send(messagePattern.auth.generateEmailToken, {email: body.email})
       .pipe(
         mergeMap((token: string) => {
           return this.mailClient
-            .send('sendConfirmation', {
+            .send(messagePattern.mail.sendConfirmation, {
               email: body.email,
               token,
             })
@@ -62,7 +62,7 @@ export class UserController {
   @Get('verify')
   async verifyEmail(@Query('token') token: string) {
     return this.authClient
-      .send('verifyEmailToken', {token})
+      .send(messagePattern.auth.verifyEmailToken, {token})
       .pipe(
         mergeMap(async (response: IVerifyTokenResponse | BadRequestException) => {
           if ('email' in response) {
@@ -122,25 +122,20 @@ export class UserController {
   @Delete(':id')
   @UseGuards(JwtGuard, RoleGuard(Role.Admin))
   async delete(@Param('id') id: number): Promise<MessageResponse> {
+    //TODO tokens must be removed from Redis
     await this.userRepository.softDelete(id)
-    await this.userService.updateRefreshToken(id, null)
     return {
       message: `User with ID "${id}" has been deleted`,
     }
   }
 
-  @MessagePattern('getUserById')
+  @MessagePattern(messagePattern.shop.getUserById)
   async getOneByIdForRmq({id}): Promise<User | null> {
     return this.userRepository.getOne(id)
   }
 
-  @MessagePattern('getUserByEmail')
+  @MessagePattern(messagePattern.shop.getUserByEmail)
   async getOneByEmail({email}: GetUserByEmail): Promise<User | null> {
     return this.userRepository.getUserByEmail(email)
-  }
-
-  @MessagePattern('updateUserRefreshToken')
-  async updateRefreshToken({userId, refreshToken}: UpdateRefreshToken): Promise<string> {
-    return this.userService.updateRefreshToken(userId, refreshToken)
   }
 }
