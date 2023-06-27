@@ -40,9 +40,9 @@ export class UserService {
     })
   }
 
-  //TODO use UserOmit type for user argument
+  //TODO use UserOmit type in argument
   prepareUser(user: any): UserOmit {
-    const {updated_at, password, refresh_token, ...data} = user
+    const {updated_at, password, ...data} = user
     return {...data}
   }
 }
