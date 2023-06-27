@@ -28,7 +28,6 @@ export class AuthService {
     return await this.jwtService.signAsync({email}, options)
   }
 
-  //TODO remove Exception type from function return
   async verifyEmailToken(token: string): Promise<VerifyEmailToken> {
     try {
       return await this.jwtService.verify(token, {

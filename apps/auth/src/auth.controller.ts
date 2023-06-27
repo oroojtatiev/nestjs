@@ -129,6 +129,7 @@ export class AuthController {
     return this.authService.generateEmailToken(email)
   }
 
+  //TODO Investigate: Can microservice have exception return?
   @MessagePattern(messagePattern.auth.verifyEmailToken)
   async verifyEmailToken({token}: IVerifyToken): Promise<VerifyEmailToken> {
     return this.authService.verifyEmailToken(token)
