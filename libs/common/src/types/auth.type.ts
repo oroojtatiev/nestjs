@@ -39,21 +39,25 @@ export interface CacheToken {
   expiresIn: number
 }
 
-export interface IVerifyToken {
+export interface VerifyToken {
   token: string
 }
 
-export interface IGenerateToken {
+export interface GenerateToken {
   email: string
 }
 
-export interface IVerifyTokenResponse {
+export interface DeleteAllTokens {
+  userId: number
+}
+
+export interface VerifyTokenResponse {
   iat: number
   exp: number
   email: string
 }
 
-export type VerifyEmailToken = IVerifyTokenResponse | BadRequestException
+export type VerifyEmailToken = VerifyTokenResponse | BadRequestException
 
 export interface RefreshToken {
   refreshToken: string | null

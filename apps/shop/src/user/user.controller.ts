@@ -11,7 +11,7 @@ import {GetUserByEmail} from '@libs/common/types/user.type'
 import {UserOmit} from '@libs/common/types/entityOmit.type'
 import {AUTH_SERVICE, MAIL_SERVICE, messagePattern} from '@libs/common/constant/microservice'
 import {CreateResponse, MessageResponse} from '@libs/common/types/response.type'
-import {IVerifyTokenResponse} from '@libs/common/types/auth.type'
+import {VerifyTokenResponse} from '@libs/common/types/auth.type'
 import {UserToken} from '@libs/common/helper/decorator/user.decorator'
 import {
   CreateUserDto, createUserSchema, UpdateUserByUserDto, updateUserByUserSchema, UpdateUserByAdminDto,
@@ -60,11 +60,11 @@ export class UserController {
   }
 
   @Get('verify')
-  async verifyEmail(@Query('token') token: string) {
+  async verifyEmail(@Query('token') token: string): Promise<Observable<MessageResponse>> {
     return this.authClient
       .send(messagePattern.auth.verifyEmailToken, {token})
       .pipe(
-        mergeMap(async (response: IVerifyTokenResponse | BadRequestException) => {
+        mergeMap(async (response: VerifyTokenResponse | BadRequestException) => {
           if ('email' in response) {
             await this.userRepository.verifyEmail(response.email)
 
@@ -121,12 +121,17 @@ export class UserController {
 
   @Delete(':id')
   @UseGuards(JwtGuard, RoleGuard(Role.Admin))
-  async delete(@Param('id') id: number): Promise<MessageResponse> {
-    //TODO tokens must be removed from Redis
-    await this.userRepository.softDelete(id)
-    return {
-      message: `User with ID "${id}" has been deleted`,
-    }
+  async delete(@Param('id') id: number): Promise<Observable<MessageResponse>> {
+    return this.authClient
+      .send(messagePattern.auth.deleteAllTokens, {userId: id})
+      .pipe(
+        mergeMap(async () => {
+          await this.userRepository.softDelete(id)
+          return {
+            message: `User with ID "${id}" has been deleted`,
+          }
+        })
+      )
   }
 
   @MessagePattern(messagePattern.shop.getUserById)

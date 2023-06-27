@@ -42,6 +42,8 @@ export class RedisService {
         'createdAt', iat,
         'expiresIn', exp,
       )
+
+      await this.cache.sadd(`token:userId:${userId}:${iat}`, `token:${tokenId}`)
     } catch (e) {
       throw new HttpException(error.tokensAdd, HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -94,5 +96,17 @@ export class RedisService {
 
   async deleteTokenPair({tokenId}: AccessTokenData): Promise<void> {
     await this.cache.del(`token:${tokenId}`)
+  }
+
+  async deleteAllTokens(userId: number) {
+    const tokenKeys = await this.cache.keys(`token:userId:${userId}:*`)
+
+    for (const el of tokenKeys) {
+      const sinterResult = await this.cache.sinter(el)
+      await this.cache.del(sinterResult[0])
+      await this.cache.del(el)
+    }
+
+    return tokenKeys
   }
 }

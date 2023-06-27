@@ -4,12 +4,12 @@ import {
 import {ClientProxy, MessagePattern, Payload} from '@nestjs/microservices'
 import {Response} from 'express'
 import {mergeMap, Observable} from 'rxjs'
-import {User, RefreshRequest} from '@libs/common'
+import {User, RefreshRequest, DeleteAllTokens} from '@libs/common'
 import {BodyValidatePipe} from '@libs/common/helper'
 import {messagePattern, SHOP_SERVICE} from '@libs/common/constant/microservice'
 import {UserToken} from '@libs/common/helper/decorator/user.decorator'
 import {
-  IVerifyToken, IGenerateToken, Tokens, VerifyEmailToken, RefreshToken, AccessTokenData,
+  VerifyToken, GenerateToken, Tokens, VerifyEmailToken, RefreshToken, AccessTokenData,
 } from '@libs/common/types/auth.type'
 import {MessageResponse} from '@libs/common/types/response.type'
 import {RedisService} from '@libs/common/redis/redis.service'
@@ -125,13 +125,18 @@ export class AuthController {
   }
 
   @MessagePattern(messagePattern.auth.generateEmailToken)
-  async generateEmailToken(@Payload() {email}: IGenerateToken): Promise<string> {
+  async generateEmailToken(@Payload() {email}: GenerateToken): Promise<string> {
     return this.authService.generateEmailToken(email)
   }
 
   //TODO Investigate: Can microservice have exception return?
   @MessagePattern(messagePattern.auth.verifyEmailToken)
-  async verifyEmailToken({token}: IVerifyToken): Promise<VerifyEmailToken> {
+  async verifyEmailToken({token}: VerifyToken): Promise<VerifyEmailToken> {
     return this.authService.verifyEmailToken(token)
+  }
+  
+  @MessagePattern(messagePattern.auth.deleteAllTokens)
+  async deleteAllTokens({userId}: DeleteAllTokens) {
+    return this.redisService.deleteAllTokens(userId)
   }
 }

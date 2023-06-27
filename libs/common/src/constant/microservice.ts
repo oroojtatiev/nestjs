@@ -6,6 +6,7 @@ const authMessagePattern = {
   verifyAccessToken: 'verifyAccessToken',
   generateEmailToken: 'generateEmailToken',
   verifyEmailToken: 'verifyEmailToken',
+  deleteAllTokens: 'deleteAllTokens',
 }
 const shopMessagePattern = {
   getUserById: 'getUserById',
